@@ -1,35 +1,13 @@
-<script>
-export default {
-  name: 'MenuItem',
-  functional: true,
-  props: {
-    icon: {
-      type: String,
-      default: ''
-    },
-    title: {
-      type: String,
-      default: ''
-    }
-  },
-  render(h, context) {
-    const { icon, title } = context.props
-    const vnodes = []
+<template>
+  <span v-if="icon">
+    <component :is="icon" v-if="icon.includes('el-icon')" class="sub-el-icon" />
+    <svg-icon v-else :icon-class="icon" />
+  </span>
+  <template v-if="title"><span>{{ title }}</span></template>
+</template>
 
-    if (icon) {
-      if (icon.includes('el-icon')) {
-        vnodes.push(<i class={[icon, 'sub-el-icon']} />)
-      } else {
-        vnodes.push(<svg-icon icon-class={icon}/>)
-      }
-    }
-
-    if (title) {
-      vnodes.push(<span slot='title'>{(title)}</span>)
-    }
-    return vnodes
-  }
-}
+<script setup lang="ts">
+withDefaults(defineProps<{ icon?: string; title?: string }>(), { icon: '', title: '' })
 </script>
 
 <style scoped>

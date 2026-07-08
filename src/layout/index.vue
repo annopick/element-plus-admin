@@ -15,51 +15,55 @@
   </div>
 </template>
 
-<script>
-import RightPanel from '@/components/RightPanel'
+<script setup lang="ts">
+import { computed, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import RightPanel from '@/components/RightPanel/index.vue'
 import { AppMain, Navbar, Settings, Sidebar, TagsView } from './components'
-import ResizeMixin from './mixin/ResizeHandler'
-import { mapState } from 'vuex'
+import { useResizeHandler } from '@/composables/useResizeHandler'
+import { useAppStore } from '@/store/modules/app'
+import { useSettingsStore } from '@/store/modules/settings'
 
-export default {
-  name: 'Layout',
-  components: {
-    AppMain,
-    Navbar,
-    RightPanel,
-    Settings,
-    Sidebar,
-    TagsView
-  },
-  mixins: [ResizeMixin],
-  computed: {
-    ...mapState({
-      sidebar: state => state.app.sidebar,
-      device: state => state.app.device,
-      showSettings: state => state.settings.showSettings,
-      needTagsView: state => state.settings.tagsView,
-      fixedHeader: state => state.settings.fixedHeader
-    }),
-    classObj() {
-      return {
-        hideSidebar: !this.sidebar.opened,
-        openSidebar: this.sidebar.opened,
-        withoutAnimation: this.sidebar.withoutAnimation,
-        mobile: this.device === 'mobile'
-      }
-    }
-  },
-  methods: {
-    handleClickOutside() {
-      this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
-    }
+const route = useRoute()
+const appStore = useAppStore()
+const settingsStore = useSettingsStore()
+
+// Replaces the former ResizeMixin (src/layout/mixin/ResizeHandler.js) — handles
+// window resize / device toggling only.
+useResizeHandler()
+
+const sidebar = computed(() => appStore.sidebar)
+const device = computed(() => appStore.device)
+const showSettings = computed(() => settingsStore.showSettings)
+const needTagsView = computed(() => settingsStore.tagsView)
+const fixedHeader = computed(() => settingsStore.fixedHeader)
+
+const classObj = computed(() => {
+  return {
+    hideSidebar: !sidebar.value.opened,
+    openSidebar: sidebar.value.opened,
+    withoutAnimation: sidebar.value.withoutAnimation,
+    mobile: device.value === 'mobile'
   }
+})
+
+// The original ResizeMixin also watched `$route` to close the sidebar on mobile
+// navigation. That responsibility moves here since useResizeHandler is scoped
+// to window resize only.
+watch(route, () => {
+  if (appStore.device === 'mobile' && appStore.sidebar.opened) {
+    appStore.closeSideBar({ withoutAnimation: false })
+  }
+})
+
+function handleClickOutside() {
+  appStore.closeSideBar({ withoutAnimation: false })
 }
 </script>
 
 <style lang="scss" scoped>
-  @import "~@/styles/mixin.scss";
-  @import "~@/styles/variables.scss";
+  @import "@/styles/mixin.scss";
+  @import "@/styles/variables.scss";
 
   .app-wrapper {
     @include clearfix;
