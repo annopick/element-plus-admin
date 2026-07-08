@@ -6,6 +6,8 @@ import Layout from '@/layout/index.vue'
 // `children` typing and our own `meta` shape while staying assignable to `RouteRecordRaw`.
 export type AppRouteRecord = RouteRecordRaw & {
   children?: AppRouteRecord[]
+  hidden?: boolean
+  alwaysShow?: boolean
   meta?: {
     title?: string
     icon?: string
@@ -47,6 +49,7 @@ export const constantRoutes: AppRouteRecord[] = [
   {
     path: '/redirect',
     component: Layout,
+    hidden: true,
     children: [
       {
         path: '/redirect/:path(.*)',
@@ -56,19 +59,23 @@ export const constantRoutes: AppRouteRecord[] = [
   } as AppRouteRecord,
   {
     path: '/login',
-    component: () => import('@/views/login/index.vue')
+    component: () => import('@/views/login/index.vue'),
+    hidden: true
   },
   {
     path: '/auth-redirect',
-    component: () => import('@/views/login/auth-redirect.vue')
+    component: () => import('@/views/login/auth-redirect.vue'),
+    hidden: true
   },
   {
     path: '/404',
-    component: () => import('@/views/error-page/404.vue')
+    component: () => import('@/views/error-page/404.vue'),
+    hidden: true
   },
   {
     path: '/401',
-    component: () => import('@/views/error-page/401.vue')
+    component: () => import('@/views/error-page/401.vue'),
+    hidden: true
   },
   {
     path: '/',
@@ -112,6 +119,7 @@ export const constantRoutes: AppRouteRecord[] = [
     path: '/profile',
     component: Layout,
     redirect: '/profile/index',
+    hidden: true,
     children: [
       {
         path: 'index',
@@ -133,6 +141,7 @@ export const asyncRoutes: AppRouteRecord[] = [
     path: '/permission',
     component: Layout,
     redirect: '/permission/page',
+    alwaysShow: true,
     name: 'Permission',
     meta: { title: 'Permission', icon: 'lock', roles: ['admin', 'editor'] },
     children: [
