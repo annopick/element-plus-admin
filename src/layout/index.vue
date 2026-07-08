@@ -1,6 +1,6 @@
 <template>
   <div :class="classObj" class="app-wrapper">
-    <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
+    <div v-if="device==='mobile'&&sidebarOpened" class="drawer-bg" @click="handleClickOutside" />
     <sidebar class="sidebar-container" />
     <div :class="{hasTagsView:needTagsView}" class="main-container">
       <div :class="{'fixed-header':fixedHeader}">
@@ -32,7 +32,12 @@ const settingsStore = useSettingsStore()
 // window resize / device toggling only.
 useResizeHandler()
 
-const sidebar = computed(() => appStore.sidebar)
+// NOTE: this const must not be named `sidebar` — in <script setup> a top-level
+// binding named `sidebar` would shadow the imported `Sidebar` component in the
+// template (`<sidebar class="sidebar-container" />`), so Vue would render the
+// ref object instead of the component and the sidebar would silently vanish.
+const sidebarOpened = computed(() => appStore.sidebar.opened)
+const sidebarWithoutAnimation = computed(() => appStore.sidebar.withoutAnimation)
 const device = computed(() => appStore.device)
 const showSettings = computed(() => settingsStore.showSettings)
 const needTagsView = computed(() => settingsStore.tagsView)
@@ -40,9 +45,9 @@ const fixedHeader = computed(() => settingsStore.fixedHeader)
 
 const classObj = computed(() => {
   return {
-    hideSidebar: !sidebar.value.opened,
-    openSidebar: sidebar.value.opened,
-    withoutAnimation: sidebar.value.withoutAnimation,
+    hideSidebar: !sidebarOpened.value,
+    openSidebar: sidebarOpened.value,
+    withoutAnimation: sidebarWithoutAnimation.value,
     mobile: device.value === 'mobile'
   }
 })
