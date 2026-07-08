@@ -25,6 +25,9 @@ function mockPlugin() {
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
+  // Bridge .env vars into process.env so the Express mock middleware
+  // (mock/mock-server.js, mounted via mockPlugin) can read VITE_APP_BASE_API
+  Object.assign(process.env, env)
   return {
     plugins: [
       vue(),
