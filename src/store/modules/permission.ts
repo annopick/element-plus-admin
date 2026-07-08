@@ -4,7 +4,8 @@ import { asyncRoutes, constantRoutes, type AppRouteRecord } from '@/router'
 
 function hasPermission(roles: string[], route: AppRouteRecord): boolean {
   if (route.meta && route.meta.roles) {
-    return roles.some((role) => route.meta!.roles!.includes(role))
+    const allowedRoles = route.meta.roles
+    return roles.some((role) => allowedRoles.includes(role))
   }
   return true
 }
