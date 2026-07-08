@@ -89,46 +89,8 @@ export const constantRoutes: AppRouteRecord[] = [
         meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
       }
     ]
-  } as AppRouteRecord,
-  {
-    path: '/documentation',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Documentation',
-        component: () => import('@/views/documentation/index.vue'),
-        meta: { title: 'Documentation', icon: 'documentation', affix: true }
-      }
-    ]
-  } as AppRouteRecord,
-  {
-    path: '/guide',
-    component: Layout,
-    redirect: '/guide/index',
-    children: [
-      {
-        path: 'index',
-        name: 'Guide',
-        component: () => import('@/views/guide/index.vue'),
-        meta: { title: 'Guide', icon: 'guide', noCache: true }
-      }
-    ]
-  } as AppRouteRecord,
-  {
-    path: '/profile',
-    component: Layout,
-    redirect: '/profile/index',
-    hidden: true,
-    children: [
-      {
-        path: 'index',
-        name: 'Profile',
-        component: () => import('@/views/profile/index.vue'),
-        meta: { title: 'Profile', icon: 'user', noCache: true }
-      }
-    ]
   } as AppRouteRecord
+  // TODO Phase 2-4: restore /documentation, /guide, /profile routes when views are migrated
 ]
 
 /**
