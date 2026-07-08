@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
 import Layout from '@/layout/index.vue'
 
 // vue-router 4's `RouteRecordRaw` is a discriminated union (single-view | multiple-views | redirect),
@@ -167,25 +167,30 @@ export const asyncRoutes: AppRouteRecord[] = [
   } as AppRouteRecord,
   // TODO Phase 2-4: restore icon, components, charts, nested, table, example, tab, error, excel, zip, pdf, theme, clipboard, external-link routes
   // 404 must be last
-  { path: '/:pathMatch(.*)*', redirect: '/404' } as AppRouteRecord
+  { path: '/:pathMatch(.*)*', redirect: '/404', hidden: true } as AppRouteRecord
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   scrollBehavior: () => ({ top: 0 }),
   routes: constantRoutes
 })
 
-// vue-router 4: reset by replacing matcher (transitional approach matching original behavior).
-// `matcher` is an undocumented internal property on a vue-router 4 router instance; replacing it
-// restores the router to its initial (constant-only) routes the same way the vue-router 3 reset did.
+// vue-router 4 public API: remove all dynamically-added routes by name,
+// keeping the constantRoutes intact. Routes without names (e.g. catch-all)
+// are skipped since they can't be removed by name.
 export function resetRouter() {
-  const newRouter = createRouter({
-    history: createWebHistory(),
-    scrollBehavior: () => ({ top: 0 }),
-    routes: constantRoutes
+  const constantRouteNames = new Set(
+    constantRoutes
+      .flatMap((r) => [r, ...(r.children || [])])
+      .map((r) => r.name)
+      .filter((n): n is string => typeof n === 'string')
+  )
+  router.getRoutes().forEach((r) => {
+    if (r.name && !constantRouteNames.has(r.name as string)) {
+      router.removeRoute(r.name)
+    }
   })
-  ;(router as any).matcher = (newRouter as any).matcher
 }
 
 export default router
