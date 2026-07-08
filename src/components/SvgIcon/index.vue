@@ -9,6 +9,8 @@
 import { computed } from 'vue'
 import { isExternal } from '@/utils/validate'
 
+defineOptions({ name: 'SvgIcon', inheritAttrs: false })
+
 const props = withDefaults(defineProps<{
   iconClass: string
   className?: string
