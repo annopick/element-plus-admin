@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig, loadEnv, type ViteDevServer, type PluginOption } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import AutoImport from 'unplugin-auto-import/vite'
@@ -7,10 +7,10 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { resolve } from 'path'
 
 // Mount the existing express mock server (mock/mock-server.js) as Vite dev middleware
-function mockPlugin() {
+function mockPlugin(): PluginOption {
   return {
     name: 'mock-server',
-    configureServer(server: any) {
+    configureServer(server: ViteDevServer) {
       // mock-server.js is CommonJS (uses require); load it lazily at config-eval time.
       // vite.config.ts runs in a Node context; require() works because tsconfig.node.json
       // compiles to CJS-compatible output.
@@ -25,9 +25,12 @@ function mockPlugin() {
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
-  // Bridge .env vars into process.env so the Express mock middleware
-  // (mock/mock-server.js, mounted via mockPlugin) can read VITE_APP_BASE_API
-  Object.assign(process.env, env)
+  // Bridge VITE_APP_BASE_API into process.env so the Express mock middleware
+  // (mock/mock-server.js, mounted via mockPlugin) can read it at request time.
+  // Vite does not auto-populate process.env from .env files for server middleware.
+  if (env.VITE_APP_BASE_API) {
+    process.env.VITE_APP_BASE_API = env.VITE_APP_BASE_API
+  }
   return {
     plugins: [
       vue(),
