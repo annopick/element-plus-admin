@@ -3,8 +3,7 @@ import { ref } from 'vue'
 import { login as loginApi, getInfo as getInfoApi, logout as logoutApi } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
-// TODO Task 4: re-enable when tagsView store exists
-// import { useTagsViewStore } from './tagsView'
+import { useTagsViewStore } from './tagsView'
 
 export const useUserStore = defineStore('user', () => {
   const token = ref<string>(getToken() || '')
@@ -38,8 +37,7 @@ export const useUserStore = defineStore('user', () => {
     roles.value = []
     removeToken()
     resetRouter()
-    // TODO Task 4: re-enable when tagsView store exists
-    // useTagsViewStore().delAllViews()
+    useTagsViewStore().delAllViews()
   }
 
   function resetToken() {
