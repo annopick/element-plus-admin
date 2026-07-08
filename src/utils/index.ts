@@ -8,12 +8,12 @@
  * @param {string} cFormat
  * @returns {string | null}
  */
-export function parseTime(time, cFormat) {
+export function parseTime(time: Date | string | number, cFormat?: string): string | null {
   if (arguments.length === 0 || !time) {
     return null
   }
   const format = cFormat || '{y}-{m}-{d} {h}:{i}:{s}'
-  let date
+  let date: Date
   if (typeof time === 'object') {
     date = time
   } else {
@@ -33,7 +33,7 @@ export function parseTime(time, cFormat) {
     }
     date = new Date(time)
   }
-  const formatObj = {
+  const formatObj: Record<string, number> = {
     y: date.getFullYear(),
     m: date.getMonth() + 1,
     d: date.getDate(),
@@ -42,10 +42,10 @@ export function parseTime(time, cFormat) {
     s: date.getSeconds(),
     a: date.getDay()
   }
-  const time_str = format.replace(/{([ymdhisa])+}/g, (result, key) => {
+  const time_str = format.replace(/{([ymdhisa])+}/g, (result: string, key: string) => {
     const value = formatObj[key]
     // Note: getDay() returns 0 on Sunday
-    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value ] }
+    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value] }
     return value.toString().padStart(2, '0')
   })
   return time_str
@@ -56,16 +56,16 @@ export function parseTime(time, cFormat) {
  * @param {string} option
  * @returns {string}
  */
-export function formatTime(time, option) {
+export function formatTime(time: number | string, option?: string): string {
   if (('' + time).length === 10) {
-    time = parseInt(time) * 1000
+    time = parseInt(time as string) * 1000
   } else {
     time = +time
   }
   const d = new Date(time)
   const now = Date.now()
 
-  const diff = (now - d) / 1000
+  const diff = (now - d.getTime()) / 1000
 
   if (diff < 30) {
     return '刚刚'
@@ -78,7 +78,7 @@ export function formatTime(time, option) {
     return '1天前'
   }
   if (option) {
-    return parseTime(time, option)
+    return parseTime(time, option) as string
   } else {
     return (
       d.getMonth() +
@@ -98,12 +98,12 @@ export function formatTime(time, option) {
  * @param {string} url
  * @returns {Object}
  */
-export function getQueryObject(url) {
+export function getQueryObject(url?: string): Record<string, string> {
   url = url == null ? window.location.href : url
   const search = url.substring(url.lastIndexOf('?') + 1)
-  const obj = {}
+  const obj: Record<string, string> = {}
   const reg = /([^?&=]+)=([^?&=]*)/g
-  search.replace(reg, (rs, $1, $2) => {
+  search.replace(reg, (rs: string, $1: string, $2: string) => {
     const name = decodeURIComponent($1)
     let val = decodeURIComponent($2)
     val = String(val)
@@ -117,10 +117,10 @@ export function getQueryObject(url) {
  * @param {string} input value
  * @returns {number} output value
  */
-export function byteLength(str) {
+export function byteLength(str: string): number {
   // returns the byte length of an utf8 string
   let s = str.length
-  for (var i = str.length - 1; i >= 0; i--) {
+  for (let i = str.length - 1; i >= 0; i--) {
     const code = str.charCodeAt(i)
     if (code > 0x7f && code <= 0x7ff) s++
     else if (code > 0x7ff && code <= 0xffff) s += 2
@@ -133,8 +133,8 @@ export function byteLength(str) {
  * @param {Array} actual
  * @returns {Array}
  */
-export function cleanArray(actual) {
-  const newArray = []
+export function cleanArray<T>(actual: T[]): T[] {
+  const newArray: T[] = []
   for (let i = 0; i < actual.length; i++) {
     if (actual[i]) {
       newArray.push(actual[i])
@@ -147,7 +147,7 @@ export function cleanArray(actual) {
  * @param {Object} json
  * @returns {Array}
  */
-export function param(json) {
+export function param(json: Record<string, any>): string {
   if (!json) return ''
   return cleanArray(
     Object.keys(json).map(key => {
@@ -161,12 +161,12 @@ export function param(json) {
  * @param {string} url
  * @returns {Object}
  */
-export function param2Obj(url) {
+export function param2Obj(url: string): Record<string, string> {
   const search = decodeURIComponent(url.split('?')[1]).replace(/\+/g, ' ')
   if (!search) {
     return {}
   }
-  const obj = {}
+  const obj: Record<string, string> = {}
   const searchArr = search.split('&')
   searchArr.forEach(v => {
     const index = v.indexOf('=')
@@ -183,7 +183,7 @@ export function param2Obj(url) {
  * @param {string} val
  * @returns {string}
  */
-export function html2Text(val) {
+export function html2Text(val: string): string {
   const div = document.createElement('div')
   div.innerHTML = val
   return div.textContent || div.innerText
@@ -195,7 +195,7 @@ export function html2Text(val) {
  * @param {(Object|Array)} source
  * @returns {Object}
  */
-export function objectMerge(target, source) {
+export function objectMerge(target: any, source: any): any {
   if (typeof target !== 'object') {
     target = {}
   }
@@ -217,7 +217,7 @@ export function objectMerge(target, source) {
  * @param {HTMLElement} element
  * @param {string} className
  */
-export function toggleClass(element, className) {
+export function toggleClass(element: HTMLElement, className: string): void {
   if (!element || !className) {
     return
   }
@@ -237,7 +237,7 @@ export function toggleClass(element, className) {
  * @param {string} type
  * @returns {Date}
  */
-export function getTime(type) {
+export function getTime(type: string): Date | number {
   if (type === 'start') {
     return new Date().getTime() - 3600 * 1000 * 24 * 90
   } else {
@@ -251,8 +251,8 @@ export function getTime(type) {
  * @param {boolean} immediate
  * @return {*}
  */
-export function debounce(func, wait, immediate) {
-  let timeout, args, context, timestamp, result
+export function debounce(func: Function, wait: number, immediate?: boolean): Function {
+  let timeout: ReturnType<typeof setTimeout> | null, args: any[] | null, context: any, timestamp: number, result: any
 
   const later = function() {
     // 据上一次触发时间间隔
@@ -271,8 +271,9 @@ export function debounce(func, wait, immediate) {
     }
   }
 
-  return function(...args) {
+  return function(this: any, ...args2: any[]) {
     context = this
+    args = args2
     timestamp = +new Date()
     const callNow = immediate && !timeout
     // 如果延时不存在，重新设定延时
@@ -293,11 +294,11 @@ export function debounce(func, wait, immediate) {
  * @param {Object} source
  * @returns {Object}
  */
-export function deepClone(source) {
+export function deepClone(source: any): any {
   if (!source && typeof source !== 'object') {
-    throw new Error('error arguments', 'deepClone')
+    throw new Error('error arguments')
   }
-  const targetObj = source.constructor === Array ? [] : {}
+  const targetObj: any = source.constructor === Array ? [] : {}
   Object.keys(source).forEach(keys => {
     if (source[keys] && typeof source[keys] === 'object') {
       targetObj[keys] = deepClone(source[keys])
@@ -312,16 +313,16 @@ export function deepClone(source) {
  * @param {Array} arr
  * @returns {Array}
  */
-export function uniqueArr(arr) {
+export function uniqueArr<T>(arr: T[]): T[] {
   return Array.from(new Set(arr))
 }
 
 /**
  * @returns {string}
  */
-export function createUniqueString() {
+export function createUniqueString(): string {
   const timestamp = +new Date() + ''
-  const randomNum = parseInt((1 + Math.random()) * 65536) + ''
+  const randomNum = parseInt(String((1 + Math.random()) * 65536)) + ''
   return (+(randomNum + timestamp)).toString(32)
 }
 
@@ -331,7 +332,7 @@ export function createUniqueString() {
  * @param {string} cls
  * @returns {boolean}
  */
-export function hasClass(ele, cls) {
+export function hasClass(ele: HTMLElement, cls: string): boolean {
   return !!ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'))
 }
 
@@ -340,7 +341,7 @@ export function hasClass(ele, cls) {
  * @param {HTMLElement} elm
  * @param {string} cls
  */
-export function addClass(ele, cls) {
+export function addClass(ele: HTMLElement, cls: string): void {
   if (!hasClass(ele, cls)) ele.className += ' ' + cls
 }
 
@@ -349,7 +350,7 @@ export function addClass(ele, cls) {
  * @param {HTMLElement} elm
  * @param {string} cls
  */
-export function removeClass(ele, cls) {
+export function removeClass(ele: HTMLElement, cls: string): void {
   if (hasClass(ele, cls)) {
     const reg = new RegExp('(\\s|^)' + cls + '(\\s|$)')
     ele.className = ele.className.replace(reg, ' ')

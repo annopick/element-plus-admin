@@ -1,6 +1,11 @@
 import request from '@/utils/request'
 
-export function login(data) {
+export interface ILoginData {
+  username: string
+  password: string
+}
+
+export function login(data: ILoginData) {
   return request({
     url: '/vue-element-admin/user/login',
     method: 'post',
@@ -8,7 +13,7 @@ export function login(data) {
   })
 }
 
-export function getInfo(token) {
+export function getInfo(token: string) {
   return request({
     url: '/vue-element-admin/user/info',
     method: 'get',
