@@ -39,6 +39,7 @@
     "@vue/tsconfig": "^0.5.1",
     "body-parser": "^1.20.2",
     "chalk": "^4.1.2",
+    "chokidar": "^3.6.0",
     "element-plus": "^2.7.0",
     "eslint": "^8.57.0",
     "eslint-plugin-vue": "^9.24.0",
@@ -69,7 +70,6 @@
     "vue",
     "admin",
     "dashboard",
-    "element-ui",
     "boilerplate",
     "admin-template",
     "management-system"
