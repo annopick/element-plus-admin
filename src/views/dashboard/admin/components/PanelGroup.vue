@@ -9,7 +9,8 @@
           <div class="card-panel-text">
             New Visits
           </div>
-          <count-to :start-val="0" :end-val="102400" :duration="2600" class="card-panel-num" />
+          <!-- TODO Phase 4: replace static number with vue-count-to animation -->
+          <div class="card-panel-num">102,400</div>
         </div>
       </div>
     </el-col>
@@ -22,7 +23,7 @@
           <div class="card-panel-text">
             Messages
           </div>
-          <count-to :start-val="0" :end-val="81212" :duration="3000" class="card-panel-num" />
+          <div class="card-panel-num">81,212</div>
         </div>
       </div>
     </el-col>
@@ -35,7 +36,7 @@
           <div class="card-panel-text">
             Purchases
           </div>
-          <count-to :start-val="0" :end-val="9280" :duration="3200" class="card-panel-num" />
+          <div class="card-panel-num">9,280</div>
         </div>
       </div>
     </el-col>
@@ -48,25 +49,25 @@
           <div class="card-panel-text">
             Shoppings
           </div>
-          <count-to :start-val="0" :end-val="13600" :duration="3600" class="card-panel-num" />
+          <div class="card-panel-num">13,600</div>
         </div>
       </div>
     </el-col>
   </el-row>
 </template>
 
-<script>
-import CountTo from 'vue-count-to'
+<script setup lang="ts">
+// TODO Phase 4: restore vue-count-to animation (CountTo component).
+// For Phase 1 we render static numbers so the dashboard boots without the dep.
 
-export default {
-  components: {
-    CountTo
-  },
-  methods: {
-    handleSetLineChartData(type) {
-      this.$emit('handleSetLineChartData', type)
-    }
-  }
+defineOptions({ name: 'PanelGroup' })
+
+const emit = defineEmits<{
+  (e: 'handleSetLineChartData', type: string): void
+}>()
+
+function handleSetLineChartData(type: string) {
+  emit('handleSetLineChartData', type)
 }
 </script>
 

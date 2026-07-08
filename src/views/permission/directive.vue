@@ -67,9 +67,9 @@
 </template>
 
 <script>
-import permission from '@/directive/permission/index.js' // 权限判断指令
+import permission from '@/directive/permission/index' // 权限判断指令 (index.ts)
 import checkPermission from '@/utils/permission' // 权限判断函数
-import SwitchRoles from './components/SwitchRoles'
+import SwitchRoles from './components/SwitchRoles.vue'
 
 export default {
   name: 'DirectivePermission',

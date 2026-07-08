@@ -8,7 +8,18 @@
 </template>
 
 <script>
-const version = require('element-ui/package.json').version // element-ui version from node_modules
+// NOTE: This component is Phase 4 scope (element-ui → element-plus theme
+// customization). The original `require('element-ui/package.json').version`
+// is a CommonJS call that (a) is unavailable in the browser ESM context and
+// (b) references the removed element-ui dependency. Guarded here so importing
+// the component no longer crashes the Layout shell. Full migration is deferred.
+let version = '2.15.14' // fallback element-ui version (unpkg URL still resolves)
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  version = require('element-ui/package.json').version
+} catch (e) {
+  // element-ui is not installed (Vue 3 migration); keep the fallback above.
+}
 const ORIGINAL_THEME = '#409EFF' // default color
 
 export default {
@@ -19,8 +30,13 @@ export default {
     }
   },
   computed: {
+    // NOTE: original was `this.$store.state.settings.theme` (Vuex). The Vuex
+    // store is gone (Pinia migration), so this would throw at runtime. The
+    // theme-customization feature depends on element-ui and is deferred to
+    // Phase 4; return '' (no theme) so the component no longer crashes the
+    // Layout shell. Full migration will wire this to useSettingsStore().
     defaultTheme() {
-      return this.$store.state.settings.theme
+      return ''
     }
   },
   watch: {

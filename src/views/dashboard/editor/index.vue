@@ -17,27 +17,21 @@
   </div>
 </template>
 
-<script>
-import { mapGetters } from 'vuex'
-import PanThumb from '@/components/PanThumb'
-import GithubCorner from '@/components/GithubCorner'
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useUserStore } from '@/store/modules/user'
+import PanThumb from '@/components/PanThumb/index.vue'
+import GithubCorner from '@/components/GithubCorner/index.vue'
 
-export default {
-  name: 'DashboardEditor',
-  components: { PanThumb, GithubCorner },
-  data() {
-    return {
-      emptyGif: 'https://wpimg.wallstcn.com/0e03b7da-db9e-4819-ba10-9016ddfdaed3'
-    }
-  },
-  computed: {
-    ...mapGetters([
-      'name',
-      'avatar',
-      'roles'
-    ])
-  }
-}
+defineOptions({ name: 'DashboardEditor' })
+
+const userStore = useUserStore()
+
+const name = userStore.name
+const avatar = userStore.avatar
+const roles = userStore.roles
+
+const emptyGif = ref('https://wpimg.wallstcn.com/0e03b7da-db9e-4819-ba10-9016ddfdaed3')
 </script>
 
 <style lang="scss" scoped>

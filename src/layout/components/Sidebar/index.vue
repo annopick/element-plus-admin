@@ -23,7 +23,10 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import Logo from './Logo.vue'
 import SidebarItem from './SidebarItem.vue'
-import variables from '@/styles/variables.scss'
+// Vite does not support webpack's `:export` SCSS→JS interop, so sidebar colors
+// are consumed from a TS constants module (mirrors variables.scss). See
+// src/styles/variables.ts for the rationale.
+import variables from '@/styles/variables'
 import { useAppStore } from '@/store/modules/app'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useSettingsStore } from '@/store/modules/settings'
