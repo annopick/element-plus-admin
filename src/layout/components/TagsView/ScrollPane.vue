@@ -14,8 +14,6 @@ const tagAndTagSpacing = 4 // tagAndTagSpacing
 
 const scrollContainer = ref<InstanceType<typeof ElScrollbar>>()
 
-const left = ref(0)
-
 const scrollWrapper = computed<HTMLElement | undefined>(() => {
   // ElScrollbar exposes its inner wrap element via $refs.wrap
   return (scrollContainer.value as any)?.wrapRef as HTMLElement | undefined

@@ -6,7 +6,7 @@
         :key="tag.path"
         ref="tagRefs"
         :class="isActive(tag) ? 'active' : ''"
-        :to="{ path: tag.path, query: tag.query }"
+        :to="({ path: tag.path, query: tag.query, fullPath: tag.fullPath } as any)"
         custom
         v-slot="{ navigate }"
       >
@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import path from 'path'
+import path from '@/utils/path'
 import ScrollPane from './ScrollPane.vue'
 import { useTagsViewStore, type TagView } from '@/store/modules/tagsView'
 import { usePermissionStore } from '@/store/modules/permission'

@@ -1,9 +1,9 @@
 <template>
   <div v-if="!item.hidden">
-    <template v-if="hasOneShowingChild(item.children, item) && (!onlyOneChild.children || onlyOneChild.noShowingChildren) && !item.alwaysShow">
-      <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path)">
-        <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':!isNest}">
-          <item :icon="onlyOneChild.meta.icon || (item.meta && item.meta.icon)" :title="onlyOneChild.meta.title" />
+    <template v-if="hasOneShowingChild(item.children, item) && (!onlyOneChild!.children || onlyOneChild!.noShowingChildren) && !item.alwaysShow">
+      <app-link v-if="onlyOneChild!.meta" :to="resolvePath(onlyOneChild!.path)">
+        <el-menu-item :index="resolvePath(onlyOneChild!.path)" :class="{'submenu-title-noDropdown':!isNest}">
+          <item :icon="onlyOneChild!.meta!.icon || (item.meta && item.meta.icon)" :title="onlyOneChild!.meta!.title" />
         </el-menu-item>
       </app-link>
     </template>
@@ -25,11 +25,13 @@
 </template>
 
 <script setup lang="ts">
-import path from 'path'
+import path from '@/utils/path'
 import { isExternal } from '@/utils/validate'
 import Item from './Item.vue'
 import AppLink from './Link.vue'
 import type { AppRouteRecord } from '@/router'
+
+type ShowingChild = AppRouteRecord & { noShowingChildren?: boolean }
 
 const props = withDefaults(defineProps<{
   item: AppRouteRecord
@@ -42,7 +44,7 @@ const props = withDefaults(defineProps<{
 
 // Non-reactive temp holder for the single showing child. Mirrors the original
 // `this.onlyOneChild = null` in data(). It must NOT trigger re-renders.
-let onlyOneChild: any = null
+let onlyOneChild: ShowingChild | null = null
 
 function hasOneShowingChild(children: AppRouteRecord[] = [], parent: AppRouteRecord): boolean {
   const showingChildren = children.filter(item => {
@@ -62,7 +64,7 @@ function hasOneShowingChild(children: AppRouteRecord[] = [], parent: AppRouteRec
 
   // Show parent if there are no child router to display
   if (showingChildren.length === 0) {
-    onlyOneChild = { ...parent, path: '', noShowingChildren: true }
+    onlyOneChild = { ...parent, path: '', noShowingChildren: true } as ShowingChild
     return true
   }
 
