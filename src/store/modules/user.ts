@@ -13,62 +13,42 @@ export const useUserStore = defineStore('user', () => {
   const introduction = ref('')
   const roles = ref<string[]>([])
 
-  function login(userInfo: { username: string; password: string }) {
+  async function login(userInfo: { username: string; password: string }) {
     const { username, password } = userInfo
-    return new Promise<void>((resolve, reject) => {
-      loginApi({ username: username.trim(), password })
-        .then((response: any) => {
-          const { data } = response
-          token.value = data.token
-          setToken(data.token)
-          resolve()
-        })
-        .catch((error: unknown) => reject(error))
-    })
+    const { data } = await loginApi({ username: username.trim(), password })
+    token.value = data.token
+    setToken(data.token)
   }
 
-  function getInfo() {
-    return new Promise<any>((resolve, reject) => {
-      getInfoApi(token.value)
-        .then((response: any) => {
-          const { data } = response
-          if (!data) reject('Verification failed, please Login again.')
-          const { roles: r, name: n, avatar: a, introduction: i } = data
-          if (!r || r.length <= 0) reject('getInfo: roles must be a non-null array!')
-          roles.value = r
-          name.value = n
-          avatar.value = a
-          introduction.value = i
-          resolve(data)
-        })
-        .catch((error: unknown) => reject(error))
-    })
+  async function getInfo() {
+    const { data } = await getInfoApi(token.value)
+    if (!data) throw 'Verification failed, please Login again.'
+    const { roles: r, name: n, avatar: a, introduction: i } = data
+    if (!r || r.length <= 0) throw 'getInfo: roles must be a non-null array!'
+    roles.value = r
+    name.value = n
+    avatar.value = a
+    introduction.value = i
+    return data
   }
 
-  function logout() {
-    return new Promise<void>((resolve, reject) => {
-      logoutApi()
-        .then(() => {
-          token.value = ''
-          roles.value = []
-          removeToken()
-          resetRouter()
-          // TODO Task 4: re-enable when tagsView store exists
-          // useTagsViewStore().delAllViews()
-          resolve()
-        })
-        .catch((error: unknown) => reject(error))
-    })
+  async function logout() {
+    await logoutApi()
+    token.value = ''
+    roles.value = []
+    removeToken()
+    resetRouter()
+    // TODO Task 4: re-enable when tagsView store exists
+    // useTagsViewStore().delAllViews()
   }
 
   function resetToken() {
-    return new Promise<void>((resolve) => {
-      token.value = ''
-      roles.value = []
-      removeToken()
-      resolve()
-    })
+    token.value = ''
+    roles.value = []
+    removeToken()
   }
+
+  // TODO Task 5+: re-add changeRoles action — needed by views/permission/components/SwitchRoles.vue
 
   return { token, name, avatar, introduction, roles, login, getInfo, logout, resetToken }
 })

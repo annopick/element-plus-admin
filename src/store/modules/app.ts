@@ -13,6 +13,7 @@ export const useAppStore = defineStore('app', () => {
     withoutAnimation: false
   })
   const device = ref<'desktop' | 'mobile'>('desktop')
+  // Element Plus default size is 'default' (Element UI's was 'medium')
   const size = ref<string>(Cookies.get('size') || 'default')
 
   function toggleSideBar() {
