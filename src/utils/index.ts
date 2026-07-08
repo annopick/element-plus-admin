@@ -295,6 +295,7 @@ export function debounce(func: Function, wait: number, immediate?: boolean): Fun
  * @returns {Object}
  */
 export function deepClone(source: any): any {
+  // NOTE: pre-existing logic bug preserved during migration — condition should be || not &&
   if (!source && typeof source !== 'object') {
     throw new Error('error arguments')
   }

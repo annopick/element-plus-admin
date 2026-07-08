@@ -63,6 +63,8 @@ service.interceptors.response.use(
         }).then(() => {
           useUserStore().resetToken()
           location.reload()
+        }).catch(() => {
+          // user cancelled re-login — no action needed
         })
       }
       return Promise.reject(new Error(res.message || 'Error'))
