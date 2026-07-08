@@ -1,21 +1,23 @@
 <template>
-  <div ref="rightPanelRef" :class="{show:show}" class="rightPanel-container">
-    <div class="rightPanel-background" />
-    <div class="rightPanel">
-      <div class="handle-button" :style="{'top':buttonTop+'px','background-color':theme}" @click="show=!show">
-        <el-icon>
-          <component :is="show ? Close : Setting" />
-        </el-icon>
-      </div>
-      <div class="rightPanel-items">
-        <slot />
+  <teleport to="body">
+    <div :class="{show:show}" class="rightPanel-container">
+      <div class="rightPanel-background" />
+      <div class="rightPanel">
+        <div class="handle-button" :style="{'top':buttonTop+'px','background-color':theme}" @click="show=!show">
+          <el-icon>
+            <component :is="show ? Close : Setting" />
+          </el-icon>
+        </div>
+        <div class="rightPanel-items">
+          <slot />
+        </div>
       </div>
     </div>
-  </div>
+  </teleport>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { Close, Setting } from '@element-plus/icons-vue'
 import { addClass, removeClass } from '@/utils'
 import { useSettingsStore } from '@/store/modules/settings'
@@ -33,7 +35,6 @@ const props = withDefaults(defineProps<{
 const settingsStore = useSettingsStore()
 
 const show = ref(false)
-const rightPanelRef = ref<HTMLElement>()
 
 const theme = computed(() => settingsStore.theme)
 
@@ -49,14 +50,6 @@ function closeSidebar(evt: MouseEvent): void {
   }
 }
 
-function insertToBody(): void {
-  const elx = rightPanelRef.value
-  const body = document.querySelector('body')
-  if (elx && body) {
-    body.insertBefore(elx, body.firstChild)
-  }
-}
-
 watch(show, (value) => {
   if (value && !props.clickNotClose) {
     addEventClick()
@@ -65,17 +58,6 @@ watch(show, (value) => {
     addClass(document.body, 'showRightPanel')
   } else {
     removeClass(document.body, 'showRightPanel')
-  }
-})
-
-onMounted(() => {
-  insertToBody()
-})
-
-onBeforeUnmount(() => {
-  const elx = rightPanelRef.value
-  if (elx) {
-    elx.remove()
   }
 })
 </script>
