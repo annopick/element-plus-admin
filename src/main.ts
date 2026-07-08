@@ -13,6 +13,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import { setupIcons } from './icons'
+import { setupDirectives } from './directive'
 
 import './permission'
 
@@ -24,6 +25,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 
 setupIcons(app)
+setupDirectives(app)
 
 app.use(store)
 app.use(router)
