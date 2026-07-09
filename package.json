@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.ts --fix",
     "type-check": "vue-tsc --noEmit",
-    "test:unit": "vitest",
+    "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "report:e2e": "playwright show-report"

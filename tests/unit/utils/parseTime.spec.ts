@@ -1,4 +1,4 @@
-import { parseTime } from '@/utils/index.js'
+import { parseTime } from '@/utils/index'
 
 describe('Utils:parseTime', () => {
   const d = new Date('2018-07-13 17:54:01') // "2018-07-13 17:54:01"
@@ -11,7 +11,7 @@ describe('Utils:parseTime', () => {
   })
 
   it('ten digits timestamp', () => {
-    expect(parseTime((d / 1000).toFixed(0))).toBe('2018-07-13 17:54:01')
+    expect(parseTime((d.getTime() / 1000).toFixed(0))).toBe('2018-07-13 17:54:01')
   })
   it('new Date', () => {
     expect(parseTime(new Date(d))).toBe('2018-07-13 17:54:01')

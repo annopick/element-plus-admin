@@ -3,14 +3,17 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/vuejs/vue">
-    <img src="https://img.shields.io/badge/vue-2.6.10-brightgreen.svg" alt="vue">
+  <a href="https://github.com/vuejs/core">
+    <img src="https://img.shields.io/badge/vue-3.4-brightgreen.svg" alt="vue">
   </a>
-  <a href="https://github.com/ElemeFE/element">
-    <img src="https://img.shields.io/badge/element--ui-2.7.0-brightgreen.svg" alt="element-ui">
+  <a href="https://github.com/element-plus/element-plus">
+    <img src="https://img.shields.io/badge/element--plus-2.7-brightgreen.svg" alt="element-plus">
   </a>
-  <a href="https://travis-ci.org/PanJiaChen/vue-element-admin" rel="nofollow">
-    <img src="https://travis-ci.org/PanJiaChen/vue-element-admin.svg?branch=master" alt="Build Status">
+  <a href="https://www.typescriptlang.org/">
+    <img src="https://img.shields.io/badge/typescript-5.4-blue.svg" alt="typescript">
+  </a>
+  <a href="https://vitejs.dev/">
+    <img src="https://img.shields.io/badge/vite-5.2-646cff.svg" alt="vite">
   </a>
   <a href="https://github.com/PanJiaChen/vue-element-admin/blob/master/LICENSE">
     <img src="https://img.shields.io/github/license/mashape/apistatus.svg" alt="license">
@@ -45,9 +48,9 @@ English | [简体中文](./README.zh-CN.md) | [日本語](./README.ja.md) | [Spa
 
 ## Introduction
 
-[vue-element-admin](https://panjiachen.github.io/vue-element-admin) is a production-ready front-end solution for admin interfaces. It is based on [vue](https://github.com/vuejs/vue) and uses the UI Toolkit [element-ui](https://github.com/ElemeFE/element).
+[vue-element-admin](https://panjiachen.github.io/vue-element-admin) is a production-ready front-end solution for admin interfaces. It is based on [vue 3](https://github.com/vuejs/core) and uses the UI Toolkit [element-plus](https://github.com/element-plus/element-plus).
 
-[vue-element-admin](https://panjiachen.github.io/vue-element-admin) is based on the newest development stack of vue and it has a built-in i18n solution, typical templates for enterprise applications, and lots of awesome features. It helps you build large and complex Single-Page Applications. I believe whatever your needs are, this project will help you.
+[vue-element-admin](https://panjiachen.github.io/vue-element-admin) is built on a modern development stack (Vue 3 + TypeScript + Vite + Pinia) and it has a built-in i18n solution, typical templates for enterprise applications, and lots of awesome features. It helps you build large and complex Single-Page Applications. I believe whatever your needs are, this project will help you.
 
 - [Preview](https://panjiachen.github.io/vue-element-admin)
 
@@ -68,13 +71,13 @@ English | [简体中文](./README.zh-CN.md) | [日本語](./README.ja.md) | [Spa
 
 **After the `v4.1.0+` version, the default master branch will not support i18n. Please use [i18n Branch](https://github.com/PanJiaChen/vue-element-admin/tree/i18n), it will keep up with the master update**
 
-**The current version is `v4.0+` build on `vue-cli`. If you find a problem, please put [issue](https://github.com/PanJiaChen/vue-element-admin/issues/new). If you want to use the old version , you can switch branch to [tag/3.11.0](https://github.com/PanJiaChen/vue-element-admin/tree/tag/3.11.0), it does not rely on `vue-cli`**
+**The current version is `v5.0+` built on Vue 3 + TypeScript + Vite. If you find a problem, please put [issue](https://github.com/PanJiaChen/vue-element-admin/issues/new).**
 
 **This project does not support low version browsers (e.g. IE). Please add polyfill by yourself.**
 
 ## Preparation
 
-You need to install [node](https://nodejs.org/) and [git](https://git-scm.com/) locally. The project is based on [ES2015+](https://es6.ruanyifeng.com/), [vue](https://cn.vuejs.org/index.html), [vuex](https://vuex.vuejs.org/zh-cn/), [vue-router](https://router.vuejs.org/zh-cn/), [vue-cli](https://github.com/vuejs/vue-cli) , [axios](https://github.com/axios/axios) and [element-ui](https://github.com/ElemeFE/element), all request data is simulated using [Mock.js](https://github.com/nuysoft/Mock).
+You need to install [node](https://nodejs.org/) and [git](https://git-scm.com/) locally. The project is based on [ES2015+](https://es6.ruanyifeng.com/), [Vue 3](https://vuejs.org/), [Pinia](https://pinia.vuejs.org/), [vue-router](https://router.vuejs.org/), [Vite](https://vitejs.dev/), [axios](https://github.com/axios/axios) and [element-plus](https://github.com/element-plus/element-plus), all request data is simulated using [Mock.js](https://github.com/nuysoft/Mock).
 Understanding and learning this knowledge in advance will greatly help the use of this project.
 
 [![Edit on CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/PanJiaChen/vue-element-admin/tree/CodeSandbox)
@@ -185,11 +188,24 @@ This will automatically open http://localhost:9527
 ## Build
 
 ```bash
-# build for test environment
-npm run build:stage
-
 # build for production environment
-npm run build:prod
+npm run build
+
+# build for staging environment
+npm run build:stage
+```
+
+## Testing
+
+```bash
+# run unit tests (vitest)
+npm run test:unit
+
+# run e2e tests (Playwright)
+npm run test:e2e
+
+# run e2e tests with interactive UI
+npm run test:e2e:ui
 ```
 
 ## Advanced
@@ -198,14 +214,11 @@ npm run build:prod
 # preview the release environment effect
 npm run preview
 
-# preview the release environment effect + static resource analysis
-npm run preview -- --report
-
-# code format check
-npm run lint
+# type check
+npm run type-check
 
 # code format check and auto fix
-npm run lint -- --fix
+npm run lint
 ```
 
 Refer to [Documentation](https://panjiachen.github.io/vue-element-admin-site/guide/essentials/deploy.html) for more information
@@ -230,11 +243,11 @@ If you find this project useful, you can buy author a glass of juice :tropical_d
 
 ## Browsers support
 
-Modern browsers and Internet Explorer 10+.
+Modern browsers (Vue 3 does not support Internet Explorer).
 
-| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="IE / Edge" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)</br>IE / Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)</br>Safari |
+| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="Edge" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)</br>Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](https://godban.github.io/browsers-support-badges/)</br>Safari |
 | --------- | --------- | --------- | --------- |
-| IE10, IE11, Edge | last 2 versions | last 2 versions | last 2 versions |
+| last 2 versions | last 2 versions | last 2 versions | last 2 versions |
 
 ## License
 
