@@ -7,36 +7,37 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from 'vue'
+import { ElMessage } from 'element-plus'
 import UploadExcelComponent from '@/components/UploadExcel/index.vue'
 
-export default {
-  name: 'UploadExcel',
-  components: { UploadExcelComponent },
-  data() {
-    return {
-      tableData: [],
-      tableHeader: []
-    }
-  },
-  methods: {
-    beforeUpload(file) {
-      const isLt1M = file.size / 1024 / 1024 < 1
+defineOptions({ name: 'UploadExcel' })
 
-      if (isLt1M) {
-        return true
-      }
+const tableData = ref<any[]>([])
+const tableHeader = ref<string[]>([])
 
-      this.$message({
-        message: 'Please do not upload files larger than 1m in size.',
-        type: 'warning'
-      })
-      return false
-    },
-    handleSuccess({ results, header }) {
-      this.tableData = results
-      this.tableHeader = header
-    }
+interface ExcelData {
+  header: string[] | null
+  results: any[] | null
+}
+
+function beforeUpload(file: File) {
+  const isLt1M = file.size / 1024 / 1024 < 1
+
+  if (isLt1M) {
+    return true
   }
+
+  ElMessage({
+    message: 'Please do not upload files larger than 1m in size.',
+    type: 'warning'
+  })
+  return false
+}
+
+function handleSuccess({ results, header }: ExcelData) {
+  tableData.value = results as any[]
+  tableHeader.value = header as string[]
 }
 </script>

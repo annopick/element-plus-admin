@@ -12,34 +12,33 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, nextTick } from 'vue'
+import articleData from './content'
 
-export default {
-  data() {
-    return {
-      article: '',
-      fullscreenLoading: true
-    }
-  },
-  mounted() {
-    this.fetchData()
-  },
-  methods: {
-    fetchData() {
-      import('./content.js').then(data => {
-        const { title } = data.default
-        document.title = title
-        this.article = data.default
-        setTimeout(() => {
-          this.fullscreenLoading = false
-          this.$nextTick(() => {
-            window.print()
-          })
-        }, 3000)
-      })
-    }
-  }
+defineOptions({ name: 'PDFDownload' })
+
+interface Article {
+  title: string
+  content: string
 }
+
+const article = ref<Article>(articleData)
+const fullscreenLoading = ref(true)
+const content = ref<HTMLElement | null>(null)
+
+function fetchData() {
+  const { title } = article.value
+  document.title = title
+  setTimeout(() => {
+    fullscreenLoading.value = false
+    nextTick(() => {
+      window.print()
+    })
+  }, 3000)
+}
+
+fetchData()
 </script>
 
 <style lang="scss">

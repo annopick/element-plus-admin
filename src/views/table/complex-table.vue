@@ -155,6 +155,7 @@ import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination/index.vue'
+import { export_json_to_excel } from '@/vendor/Export2Excel'
 
 defineOptions({ name: 'ComplexTable' })
 
@@ -204,6 +205,7 @@ const importanceOptions = [1, 2, 3]
 const sortOptions = [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }]
 const statusOptions = ['published', 'draft', 'deleted']
 const showReviewer = ref(false)
+const downloadLoading = ref(false)
 const temp = reactive({
   id: undefined as number | undefined,
   importance: 1,
@@ -358,7 +360,26 @@ function handleFetchPv(pv: string) {
 }
 
 function handleDownload() {
-  ElMessage.info('Excel export will be available in Phase 4')
+  downloadLoading.value = true
+  const tHeader = ['Timestamp', 'Title', 'Author', 'Reviewer', 'Importance', 'Status']
+  const filterVal = ['timestamp', 'title', 'author', 'reviewer', 'importance', 'status']
+  const data = formatJson(filterVal, list.value)
+  export_json_to_excel({
+    header: tHeader,
+    data,
+    filename: 'table-list'
+  })
+  downloadLoading.value = false
+}
+
+function formatJson(filterVal: string[], jsonData: any[]) {
+  return jsonData.map(v => filterVal.map(j => {
+    if (j === 'timestamp') {
+      return parseTime(v[j])
+    } else {
+      return v[j]
+    }
+  }))
 }
 
 function getSortClass(key: string) {

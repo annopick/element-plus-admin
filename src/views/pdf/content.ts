@@ -1,3 +1,8 @@
+interface ArticleData {
+  title: string
+  content: string
+}
+
 const title = 'Plans for the Next Iteration of Vue.js'
 
 const content = `<p>Last week at<a href="https://vuejs.london/summary" rel="nofollow">Vue.js London</a>I gave a brief sneak peek of what’s coming in the next major version of Vue. This post provides an in-depth overview of the plan.</p>
@@ -50,7 +55,7 @@ const content = `<p>Last week at<a href="https://vuejs.london/summary" rel="nofo
 <h4>8. FinalRelease</h4>
 <p>In all honesty, we don’t know when this will happen yet, but likely in 2019. Again, we care more about shipping something that is solid and stable rather than hitting specific dates. There is a lot of work to be done, but we are excited for what’s coming next!</p>`
 
-const data = {
+const data: ArticleData = {
   title,
   content
 }

@@ -1,7 +1,7 @@
 <template>
   <div style="display:inline-block;">
     <label class="radio-label">Book Type: </label>
-    <el-select v-model="bookType" style="width:120px;">
+    <el-select :model-value="modelValue" style="width:120px;" @update:model-value="update">
       <el-option
         v-for="item in options"
         :key="item"
@@ -12,28 +12,22 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    value: {
-      type: String,
-      default: 'xlsx'
-    }
-  },
-  data() {
-    return {
-      options: ['xlsx', 'csv', 'txt']
-    }
-  },
-  computed: {
-    bookType: {
-      get() {
-        return this.value
-      },
-      set(val) {
-        this.$emit('input', val)
-      }
-    }
-  }
+<script setup lang="ts">
+import { ref } from 'vue'
+
+defineOptions({ name: 'BookTypeOption' })
+
+defineProps<{
+  modelValue: string
+}>()
+
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string): void
+}>()
+
+const options = ref(['xlsx', 'csv', 'txt'])
+
+function update(value: string) {
+  emit('update:modelValue', value)
 }
 </script>
