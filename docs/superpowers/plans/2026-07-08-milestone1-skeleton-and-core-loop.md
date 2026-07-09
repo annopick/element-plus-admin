@@ -2021,6 +2021,19 @@ git add e2e/
 git commit -m "test(e2e): add core-loop spec + smoke (Phase 1 pages)"
 ```
 
+- [ ] **Step 6: frontend-acceptance 子智能体交互式验收（强制，见 spec 6.1.1）**
+
+脚本全绿后，**必须派遣 `frontend-acceptance` 子智能体**做交互式验收。脚本只验证预写断言，frontend-acceptance 能做开放式交互验证（点击、填表、切换、截图取证、发现脚本未覆盖的回归）。
+
+派遣指令（控制器执行）：
+- subagent_type: `frontend-acceptance`
+- 提供 dev server 地址 `http://localhost:9527`
+- 提供验收范围：login（admin/111111 登录）、dashboard（渲染验证）、404/401 页、侧边栏导航、标签页开关、登出
+- 提供登录账号：admin / 密码 111111（mock 接受任意密码）
+- 要求：实际访问每个页面、执行关键交互（登录、点击菜单、开关标签页、登出）、截图取证、输出结构化验收报告（每页 ✅/❌ + 问题描述 + 控制台错误 + 整体结论）
+
+验收报告若有 ❌ 项：派遣 implementer 修复 → 重新验收，直到全绿。
+
 ---
 
 ## 自检（Self-Review）

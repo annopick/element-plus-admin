@@ -383,6 +383,25 @@ git add src/router/ e2e/smoke-table-example.spec.ts
 git commit -m "feat(router): restore table + example routes, add e2e smoke tests"
 ```
 
+- [ ] **Step 6: frontend-acceptance 子智能体交互式验收（强制，见 spec 6.1.1）**
+
+脚本全绿后，**必须派遣 `frontend-acceptance` 子智能体**做交互式验收。脚本只验证页面渲染 + 控制台无错，frontend-acceptance 能验证表格交互（分页、排序、行内编辑）、表单交互（校验、提交）、拖拽排序等脚本未覆盖的交互行为。
+
+派遣指令（控制器执行）：
+- subagent_type: `frontend-acceptance`
+- 提供 dev server 地址 `http://localhost:9527`
+- 提供登录账号：admin / 密码 111111（mock 接受任意密码）
+- 提供验收范围及关键交互：
+  - `/table/complex-table`：分页切换、排序（点击 ID 列头）、Create/Edit 对话框打开+表单校验、Publish/Draft 状态切换
+  - `/table/inline-edit-table`：点击 Edit → 输入框出现 → 编辑标题 → Ok 确认 / cancel 撤销
+  - `/table/drag-table`：验证拖拽手柄存在、拖拽后顺序变化（"after dragging order"更新）
+  - `/table/dynamic-table`：勾选/取消 checkbox → 表头列变化
+  - `/example/list`：表格渲染、分页、点击 Edit 跳转编辑页
+  - `/example/create`：ArticleDetail 表单渲染（Tinymce 编辑器、MDinput、日期选择器）
+- 要求：实际访问每个页面、执行关键交互、截图取证、输出结构化验收报告（每页 ✅/❌ + 问题描述 + 控制台错误 + 整体结论）
+
+验收报告若有 ❌ 项：派遣 implementer 修复 → 重新验收，直到全绿。
+
 ---
 
 ## 自检（Self-Review）

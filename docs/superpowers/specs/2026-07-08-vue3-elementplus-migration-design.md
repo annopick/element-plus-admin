@@ -513,6 +513,34 @@ for (const p of PAGES) {
 - `"test:e2e:ui": "playwright test --ui"`
 - `"report:e2e": "playwright show-report"`
 
+### 6.1.1 frontend-acceptance 子智能体交互式验收（强制）
+
+**`@playwright/test` 脚本是自动化基线，但不充分**——脚本只能验证预写断言（元素可见、控制台无错），无法覆盖开放式的页面交互（点击按钮、填表提交、切换状态、观察视觉渲染、发现脚本未覆盖路径的回归）。因此**每个阶段验收必须在脚本全绿之后，额外派遣 `frontend-acceptance` 子智能体做交互式验收**。
+
+**工具**：`frontend-acceptance` 子智能体（自带 Playwright MCP 浏览器工具：`browser_navigate`、`browser_click`、`browser_snapshot`、`browser_fill_form`、`browser_take_screenshot` 等）。
+
+**执行方式**：由控制器（主会话）派遣 `frontend-acceptance` 子智能体，提供：
+- dev server 地址（`http://localhost:9527`）
+- 当阶段已迁移的页面清单 + 预期交互行为（登录账号、表格分页、表单校验、拖拽等）
+- 要求：实际访问每个页面、执行关键交互、截图取证、输出结构化验收报告
+
+**frontend-acceptance 验收 vs 脚本验收的分工**
+
+| 维度 | `@playwright/test` 脚本 | `frontend-acceptance` 子智能体 |
+|------|------------------------|-------------------------------|
+| 触发时机 | 每个 Task / 阶段结束自动跑 | 每个阶段脚本全绿后，由控制器派遣 |
+| 验证范围 | 预写断言（元素可见、URL、控制台无错） | 开放式交互（点击、填表、切换、拖拽、视觉观察） |
+| 产出 | pass/fail + 截图归档 | **结构化验收报告**（含截图、发现的问题、通过/不通过判定） |
+| 能发现的 bug | 仅脚本覆盖的路径 | 脚本未覆盖的交互回归、视觉回退、组件行为差异 |
+
+**验收报告要求**：`frontend-acceptance` 子智能体输出结构化报告，包含：
+1. 验收范围（页面清单 + 交互项）
+2. 每页验收结果（✅ 通过 / ❌ 失败 + 问题描述 + 截图）
+3. 控制台错误记录
+4. 整体验收结论（通过 / 需修复）
+
+**控制器职责**：收到 `frontend-acceptance` 报告后，若有 ❌ 项，派遣 implementer 修复，修复后重新验收，直到全绿。
+
 ### 6.2 风险登记与缓解
 
 | 风险 | 影响 | 缓解 |
@@ -540,10 +568,15 @@ for (const p of PAGES) {
 - [ ] `npm run test:unit`（vitest）通过
 - [ ] 无残留 Vue2 写法：`.native`、`.sync`、`slot-scope`、`Vue.filter`、`this.$set`、`new Vue`、`functional:` 全为 0（grep 验证）
 
-**浏览器验收（e2e）**
+**浏览器验收（e2e 脚本）**
 - [ ] `npx playwright test e2e/core-loop.spec.ts` 全绿（核心闭环 11 项交互断言）
 - [ ] `npx playwright test e2e/smoke-all-pages.spec.ts` 全绿（40+ 页面：访问成功 + 关键元素可见 + **控制台错误/pageerror = 0**）
 - [ ] `e2e/snapshots/` 每页一张截图，人工抽查侧边栏/表格/表单无视觉明显回退
+
+**浏览器验收（frontend-acceptance 子智能体交互式验收）**
+- [ ] 每个阶段脚本全绿后，派遣 `frontend-acceptance` 子智能体做交互式验收（实际点击、填表、切换、拖拽、截图取证）
+- [ ] `frontend-acceptance` 输出结构化验收报告，所有页面 ✅ 通过（无 ❌ 未修复项）
+- [ ] 阶段间不累积验收债——本阶段 `frontend-acceptance` 发现的问题在本阶段修复完毕
 
 **功能验收（人工抽查，e2e 之外的补充）**
 - [ ] admin/editor 双角色登录、权限切换、动态路由
