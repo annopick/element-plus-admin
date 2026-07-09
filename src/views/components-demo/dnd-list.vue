@@ -9,31 +9,22 @@
   </div>
 </template>
 
-<script>
-import DndList from '@/components/DndList'
+<script setup lang="ts">
+import { ref } from 'vue'
+import DndList from '@/components/DndList/index.vue'
 import { fetchList } from '@/api/article'
 
-export default {
-  name: 'DndListDemo',
-  components: { DndList },
-  data() {
-    return {
-      list1: [],
-      list2: []
-    }
-  },
-  created() {
-    this.getData()
-  },
-  methods: {
-    getData() {
-      this.listLoading = true
-      fetchList().then(response => {
-        this.list1 = response.data.items.splice(0, 5)
-        this.list2 = response.data.items
-      })
-    }
-  }
-}
-</script>
+defineOptions({ name: 'DndListDemo' })
 
+const list1 = ref<any[]>([])
+const list2 = ref<any[]>([])
+
+function getData() {
+  fetchList({}).then(response => {
+    list1.value = response.data.items.splice(0, 5)
+    list2.value = response.data.items
+  })
+}
+
+getData()
+</script>

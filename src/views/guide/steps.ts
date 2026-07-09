@@ -1,10 +1,12 @@
-const steps = [
+import type { DriveStep } from 'driver.js'
+
+const steps: DriveStep[] = [
   {
     element: '#hamburger-container',
     popover: {
       title: 'Hamburger',
       description: 'Open && Close sidebar',
-      position: 'bottom'
+      side: 'bottom'
     }
   },
   {
@@ -12,7 +14,7 @@ const steps = [
     popover: {
       title: 'Breadcrumb',
       description: 'Indicate the current page location',
-      position: 'bottom'
+      side: 'bottom'
     }
   },
   {
@@ -20,7 +22,7 @@ const steps = [
     popover: {
       title: 'Page Search',
       description: 'Page search, quick navigation',
-      position: 'left'
+      side: 'left'
     }
   },
   {
@@ -28,7 +30,7 @@ const steps = [
     popover: {
       title: 'Screenfull',
       description: 'Set the page into fullscreen',
-      position: 'left'
+      side: 'left'
     }
   },
   {
@@ -36,7 +38,7 @@ const steps = [
     popover: {
       title: 'Switch Size',
       description: 'Switch the system size',
-      position: 'left'
+      side: 'left'
     }
   },
   {
@@ -44,9 +46,8 @@ const steps = [
     popover: {
       title: 'Tags view',
       description: 'The history of the page you visited',
-      position: 'bottom'
-    },
-    padding: 0
+      side: 'bottom'
+    }
   }
 ]
 

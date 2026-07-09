@@ -2,19 +2,9 @@
   <div class="components-container">
     <aside>
       <a href="https://github.com/PanJiaChen/vue-countTo" target="_blank">countTo-component</a>
+      (inline reimplementation — vue-count-to is not installed in the Vue3 build)
     </aside>
-    <count-to
-      ref="example"
-      :start-val="_startVal"
-      :end-val="_endVal"
-      :duration="_duration"
-      :decimals="_decimals"
-      :separator="_separator"
-      :prefix="_prefix"
-      :suffix="_suffix"
-      :autoplay="false"
-      class="example"
-    />
+    <span class="example">{{ formattedCount }}</span>
     <div style="margin-left: 25%;margin-top: 40px;">
       <label class="label" for="startValInput">startVal:
         <input v-model.number="setStartVal" type="number" name="startValInput">
@@ -45,81 +35,155 @@
         <input v-model="setSuffix" name="suffixInput">
       </label>
     </div>
-    <aside>&lt;count-to :start-val=&#x27;{{ _startVal }}&#x27; :end-val=&#x27;{{ _endVal }}&#x27; :duration=&#x27;{{ _duration }}&#x27;
-      :decimals=&#x27;{{ _decimals }}&#x27; :separator=&#x27;{{ _separator }}&#x27; :prefix=&#x27;{{ _prefix }}&#x27; :suffix=&#x27;{{ _suffix }}&#x27;
+    <aside>&lt;count-to :start-val='{{ _startVal }}' :end-val='{{ _endVal }}' :duration='{{ _duration }}'
+      :decimals='{{ _decimals }}' :separator='{{ _separator }}' :prefix='{{ _prefix }}' :suffix='{{ _suffix }}'
       :autoplay=false&gt;</aside>
   </div>
 </template>
 
-<script>
-import countTo from 'vue-count-to'
+<script setup lang="ts">
+import { computed, onBeforeUnmount, ref } from 'vue'
 
-export default {
-  name: 'CountToDemo',
-  components: { countTo },
-  data() {
-    return {
-      setStartVal: 0,
-      setEndVal: 2017,
-      setDuration: 4000,
-      setDecimals: 0,
-      setSeparator: ',',
-      setSuffix: ' rmb',
-      setPrefix: '¥ '
+defineOptions({ name: 'CountToDemo' })
+
+const setStartVal = ref(0)
+const setEndVal = ref(2017)
+const setDuration = ref(4000)
+const setDecimals = ref(0)
+const setSeparator = ref(',')
+const setSuffix = ref(' rmb')
+const setPrefix = ref('¥ ')
+
+const _startVal = computed(() => setStartVal.value || 0)
+const _endVal = computed(() => setEndVal.value || 0)
+const _duration = computed(() => setDuration.value || 100)
+const _decimals = computed(() => {
+  if (setDecimals.value) {
+    if (setDecimals.value < 0 || setDecimals.value > 20) {
+      window.alert('digits argument must be between 0 and 20')
+      return 0
     }
-  },
-  computed: {
-    _startVal() {
-      if (this.setStartVal) {
-        return this.setStartVal
-      } else {
-        return 0
-      }
-    },
-    _endVal() {
-      if (this.setEndVal) {
-        return this.setEndVal
-      } else {
-        return 0
-      }
-    },
-    _duration() {
-      if (this.setDuration) {
-        return this.setDuration
-      } else {
-        return 100
-      }
-    },
-    _decimals() {
-      if (this.setDecimals) {
-        if (this.setDecimals < 0 || this.setDecimals > 20) {
-          alert('digits argument must be between 0 and 20')
-          return 0
+    return setDecimals.value
+  }
+  return 0
+})
+const _separator = computed(() => setSeparator.value)
+const _suffix = computed(() => setSuffix.value)
+const _prefix = computed(() => setPrefix.value)
+
+// ---- inline count animation ----
+const displayValue = ref(_startVal.value)
+let raf: number | null = null
+let localStartVal = 0
+let startTime: number | null = null
+let paused = false
+let remaining: number | null = null
+
+const formattedCount = computed(() => {
+  let formatted = displayValue.value.toFixed(_decimals.value)
+  if (_separator.value) {
+    const [intPart, decPart] = formatted.split('.')
+    const withSeparator = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, _separator.value)
+    formatted = decPart !== undefined ? `${withSeparator}.${decPart}` : withSeparator
+  }
+  return `${_prefix.value}${formatted}${_suffix.value}`
+})
+
+function step(timestamp: number) {
+  if (startTime === null) {
+    startTime = timestamp
+  }
+  const progress = paused ? 0 : timestamp - startTime
+  const duration = remaining ?? _duration.value
+  const eased = easeInOutExpo(Math.min(progress / duration, 1))
+  displayValue.value = localStartVal + (_endVal.value - localStartVal) * eased
+  if (progress < duration) {
+    raf = window.requestAnimationFrame(step)
+  } else {
+    displayValue.value = _endVal.value
+    raf = null
+    remaining = null
+  }
+}
+
+function easeInOutExpo(t: number): number {
+  if (t === 1) return 1
+  return 1 - Math.pow(2, -10 * t)
+}
+
+function start() {
+  cancel()
+  localStartVal = _startVal.value
+  displayValue.value = localStartVal
+  startTime = null
+  paused = false
+  remaining = null
+  raf = window.requestAnimationFrame(step)
+}
+
+function pauseResume() {
+  if (raf === null) {
+    // currently stopped; resume from current displayValue to endVal
+    if (displayValue.value === _endVal.value) return
+    localStartVal = displayValue.value
+    startTime = null
+    paused = false
+    remaining = null
+    raf = window.requestAnimationFrame(step)
+    return
+  }
+  if (paused) {
+    // resume: restart the clock, keep remaining duration
+    paused = false
+    startTime = null
+    if (remaining !== null) {
+      const r = remaining
+      const restartStart = localStartVal
+      raf = window.requestAnimationFrame((ts) => {
+        startTime = ts
+        const endVal = _endVal.value
+        const stepResume = (timestamp: number) => {
+          if (startTime === null) startTime = timestamp
+          const progress = timestamp - startTime
+          const eased = easeInOutExpo(Math.min(progress / r, 1))
+          displayValue.value = restartStart + (endVal - restartStart) * eased
+          if (progress < r) {
+            raf = window.requestAnimationFrame(stepResume)
+          } else {
+            displayValue.value = endVal
+            raf = null
+            remaining = null
+            paused = false
+          }
         }
-        return this.setDecimals
-      } else {
-        return 0
-      }
-    },
-    _separator() {
-      return this.setSeparator
-    },
-    _suffix() {
-      return this.setSuffix
-    },
-    _prefix() {
-      return this.setPrefix
+        raf = window.requestAnimationFrame(stepResume)
+      })
     }
-  },
-  methods: {
-    start() {
-      this.$refs.example.start()
-    },
-    pauseResume() {
-      this.$refs.example.pauseResume()
+  } else {
+    // pause: capture remaining time
+    paused = true
+    if (startTime !== null) {
+      const elapsed = performance.now() - startTime
+      remaining = Math.max((_duration.value) - elapsed, 0)
+      localStartVal = displayValue.value
+    }
+    if (raf !== null) {
+      window.cancelAnimationFrame(raf)
+      raf = null
     }
   }
 }
+
+function cancel() {
+  if (raf !== null) {
+    window.cancelAnimationFrame(raf)
+    raf = null
+  }
+}
+
+onBeforeUnmount(() => {
+  cancel()
+})
 </script>
 
 <style scoped>
@@ -215,4 +279,3 @@ input {
   border-color: #E65D6E;
 }
 </style>
-
