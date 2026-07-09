@@ -2,7 +2,7 @@
   <section class="todoapp">
     <!-- header -->
     <header class="header">
-      <input class="new-todo" autocomplete="off" placeholder="Todo List" @keyup.enter="addTodo">
+      <input v-model="newTodo" class="new-todo" autocomplete="off" placeholder="Todo List" @keyup.enter="addTodo">
     </header>
     <!-- main section -->
     <section v-show="todos.length" class="main">
@@ -23,11 +23,11 @@
     <footer v-show="todos.length" class="footer">
       <span class="todo-count">
         <strong>{{ remaining }}</strong>
-        {{ remaining | pluralize('item') }} left
+        {{ pluralize(remaining, 'item') }} left
       </span>
       <ul class="filters">
         <li v-for="(val, key) in filters" :key="key">
-          <a :class="{ selected: visibility === key }" @click.prevent="visibility = key">{{ key | capitalize }}</a>
+          <a :class="{ selected: visibility === key }" @click.prevent="visibility = key as string">{{ capitalize(key) }}</a>
         </li>
       </ul>
       <!-- <button class="clear-completed" v-show="todos.length > remaining" @click="clearCompleted">
@@ -37,16 +37,24 @@
   </section>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, computed } from 'vue'
 import Todo from './Todo.vue'
 
+defineOptions({ name: 'TodoList' })
+
+interface TodoItem {
+  text: string
+  done: boolean
+}
+
 const STORAGE_KEY = 'todos'
-const filters = {
+const filters: Record<string, (todos: TodoItem[]) => TodoItem[]> = {
   all: todos => todos,
   active: todos => todos.filter(todo => !todo.done),
   completed: todos => todos.filter(todo => todo.done)
 }
-const defalutList = [
+const defalutList: TodoItem[] = [
   { text: 'star this repository', done: false },
   { text: 'fork this repository', done: false },
   { text: 'follow author', done: false },
@@ -56,69 +64,64 @@ const defalutList = [
   { text: 'axios', done: true },
   { text: 'webpack', done: true }
 ]
-export default {
-  components: { Todo },
-  filters: {
-    pluralize: (n, w) => n === 1 ? w : w + 's',
-    capitalize: s => s.charAt(0).toUpperCase() + s.slice(1)
-  },
-  data() {
-    return {
-      visibility: 'all',
-      filters,
-      // todos: JSON.parse(window.localStorage.getItem(STORAGE_KEY)) || defalutList
-      todos: defalutList
-    }
-  },
-  computed: {
-    allChecked() {
-      return this.todos.every(todo => todo.done)
-    },
-    filteredTodos() {
-      return filters[this.visibility](this.todos)
-    },
-    remaining() {
-      return this.todos.filter(todo => !todo.done).length
-    }
-  },
-  methods: {
-    setLocalStorage() {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(this.todos))
-    },
-    addTodo(e) {
-      const text = e.target.value
-      if (text.trim()) {
-        this.todos.push({
-          text,
-          done: false
-        })
-        this.setLocalStorage()
-      }
-      e.target.value = ''
-    },
-    toggleTodo(val) {
-      val.done = !val.done
-      this.setLocalStorage()
-    },
-    deleteTodo(todo) {
-      this.todos.splice(this.todos.indexOf(todo), 1)
-      this.setLocalStorage()
-    },
-    editTodo({ todo, value }) {
-      todo.text = value
-      this.setLocalStorage()
-    },
-    clearCompleted() {
-      this.todos = this.todos.filter(todo => !todo.done)
-      this.setLocalStorage()
-    },
-    toggleAll({ done }) {
-      this.todos.forEach(todo => {
-        todo.done = done
-        this.setLocalStorage()
-      })
-    }
+
+const visibility = ref<keyof typeof filters>('all')
+const todos = ref<TodoItem[]>(defalutList)
+const newTodo = ref('')
+
+const allChecked = computed(() => todos.value.every(todo => todo.done))
+const filteredTodos = computed(() => filters[visibility.value](todos.value))
+const remaining = computed(() => todos.value.filter(todo => !todo.done).length)
+
+function pluralize(n: number, w: string): string {
+  return n === 1 ? w : w + 's'
+}
+
+function capitalize(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
+function setLocalStorage() {
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(todos.value))
+}
+
+function addTodo() {
+  const text = newTodo.value
+  if (text.trim()) {
+    todos.value.push({
+      text,
+      done: false
+    })
+    setLocalStorage()
   }
+  newTodo.value = ''
+}
+
+function toggleTodo(val: TodoItem) {
+  val.done = !val.done
+  setLocalStorage()
+}
+
+function deleteTodo(todo: TodoItem) {
+  todos.value.splice(todos.value.indexOf(todo), 1)
+  setLocalStorage()
+}
+
+function editTodo({ todo, value }: { todo: TodoItem; value: string }) {
+  todo.text = value
+  setLocalStorage()
+}
+
+function clearCompleted() {
+  todos.value = todos.value.filter(todo => !todo.done)
+  setLocalStorage()
+}
+
+function toggleAll({ done }: { done: boolean }) {
+  todos.value.forEach(todo => {
+    todo.done = done
+    setLocalStorage()
+  })
 }
 </script>
 

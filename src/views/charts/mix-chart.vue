@@ -1,23 +1,19 @@
 <template>
   <div class="chart-container">
-    <chart height="100%" width="100%" />
+    <mix-chart height="100%" width="100%" />
   </div>
 </template>
 
-<script>
-import Chart from '@/components/Charts/MixChart'
+<script setup lang="ts">
+import MixChart from '@/components/Charts/MixChart.vue'
 
-export default {
-  name: 'MixChart',
-  components: { Chart }
-}
+defineOptions({ name: 'MixChart' })
 </script>
 
 <style scoped>
-.chart-container{
+.chart-container {
   position: relative;
   width: 100%;
   height: calc(100vh - 84px);
 }
 </style>
-
