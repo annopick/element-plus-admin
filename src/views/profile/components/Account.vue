@@ -12,27 +12,26 @@
   </el-form>
 </template>
 
-<script>
-export default {
-  props: {
-    user: {
-      type: Object,
-      default: () => {
-        return {
-          name: '',
-          email: ''
-        }
-      }
-    }
-  },
-  methods: {
-    submit() {
-      this.$message({
-        message: 'User information has been updated successfully',
-        type: 'success',
-        duration: 5 * 1000
-      })
-    }
-  }
+<script setup lang="ts">
+import { ElMessage } from 'element-plus'
+
+interface User {
+  name: string
+  email: string
+}
+
+withDefaults(defineProps<{ user: User }>(), {
+  user: () => ({
+    name: '',
+    email: ''
+  })
+})
+
+const submit = () => {
+  ElMessage({
+    message: 'User information has been updated successfully',
+    type: 'success',
+    duration: 5 * 1000
+  })
 }
 </script>

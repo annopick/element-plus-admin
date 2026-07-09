@@ -15,14 +15,11 @@
   </div>
 </template>
 
-<script>
-import ErrorA from './components/ErrorTestA'
-import ErrorB from './components/ErrorTestB'
+<script setup lang="ts">
+import ErrorA from './components/ErrorTestA.vue'
+import ErrorB from './components/ErrorTestB.vue'
 
-export default {
-  name: 'ErrorLog',
-  components: { ErrorA, ErrorB }
-}
+defineOptions({ name: 'ErrorLog' })
 </script>
 
 <style scoped>

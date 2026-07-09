@@ -66,32 +66,28 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from 'vue'
 import permission from '@/directive/permission/index' // 权限判断指令 (index.ts)
 import checkPermission from '@/utils/permission' // 权限判断函数
 import SwitchRoles from './components/SwitchRoles.vue'
 
-export default {
-  name: 'DirectivePermission',
-  components: { SwitchRoles },
-  directives: { permission },
-  data() {
-    return {
-      key: 1 // 为了能每次切换权限的时候重新初始化指令
-    }
-  },
-  methods: {
-    checkPermission,
-    handleRolesChange() {
-      this.key++
-    }
-  }
+defineOptions({ name: 'DirectivePermission' })
+
+// enables v-permission directive in template (Vue3 script setup naming convention)
+const vPermission = permission
+
+// 为了能每次切换权限的时候重新初始化指令
+const key = ref(1)
+
+function handleRolesChange() {
+  key.value++
 }
 </script>
 
 <style lang="scss" scoped>
 .app-container {
-  ::v-deep .permission-alert {
+  :deep(.permission-alert) {
     width: 320px;
     margin-top: 15px;
     background-color: #f0f9eb;
@@ -100,12 +96,11 @@ export default {
     border-radius: 4px;
     display: inline-block;
   }
-  ::v-deep .permission-sourceCode {
+  :deep(.permission-sourceCode) {
     margin-left: 15px;
   }
-  ::v-deep .permission-tag {
+  :deep(.permission-tag) {
     background-color: #ecf5ff;
   }
 }
 </style>
-

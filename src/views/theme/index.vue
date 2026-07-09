@@ -1,11 +1,11 @@
 <template>
   <div class="app-container">
     <el-card class="box-card">
-      <div slot="header">
+      <template #header>
         <a class="link-type link-title" target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/guide/advanced/theme.html">
           Theme documentation
         </a>
-      </div>
+      </template>
       <div class="box-item">
         <span class="field-label">Change Theme : </span>
         <el-switch v-model="theme" />
@@ -34,33 +34,33 @@
     </div>
 
     <div class="block">
-      <el-button type="primary" icon="el-icon-edit" />
-      <el-button type="primary" icon="el-icon-share" />
-      <el-button type="primary" icon="el-icon-delete" />
-      <el-button type="primary" icon="el-icon-search">
+      <el-button type="primary" :icon="Edit" />
+      <el-button type="primary" :icon="Share" />
+      <el-button type="primary" :icon="Delete" />
+      <el-button type="primary" :icon="Search">
         Search
       </el-button>
       <el-button type="primary">
         Upload
-        <i class="el-icon-upload el-icon-right" />
+        <el-icon class="el-icon-right"><Upload /></el-icon>
       </el-button>
     </div>
 
     <div class="block">
-      <el-tag v-for="tag in tags" :key="tag.type" :type="tag.type" class="tag-item">
+      <el-tag v-for="tag in tags" :key="tag.type" :type="tag.type || undefined" class="tag-item">
         {{ tag.name }}
       </el-tag>
     </div>
 
     <div class="block">
       <el-radio-group v-model="radio">
-        <el-radio :label="3">
+        <el-radio :value="3">
           Option A
         </el-radio>
-        <el-radio :label="6">
+        <el-radio :value="6">
           Option B
         </el-radio>
-        <el-radio :label="9">
+        <el-radio :value="9">
           Option C
         </el-radio>
       </el-radio-group>
@@ -72,32 +72,27 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+import { Edit, Share, Delete, Search, Upload } from '@element-plus/icons-vue'
 import { toggleClass } from '@/utils'
-import '@/assets/custom-theme/index.css' // the theme changed version element-ui css
 
-export default {
-  name: 'Theme',
-  data() {
-    return {
-      theme: false,
-      tags: [
-        { name: 'Tag One', type: '' },
-        { name: 'Tag Two', type: 'info' },
-        { name: 'Tag Three', type: 'success' },
-        { name: 'Tag Four', type: 'warning' },
-        { name: 'Tag Five', type: 'danger' }
-      ],
-      slideValue: 50,
-      radio: 3
-    }
-  },
-  watch: {
-    theme() {
-      toggleClass(document.body, 'custom-theme')
-    }
-  }
-}
+defineOptions({ name: 'Theme' })
+
+const theme = ref(false)
+const tags = ref<Array<{ name: string; type: '' | 'info' | 'success' | 'warning' | 'danger' }>>([
+  { name: 'Tag One', type: '' },
+  { name: 'Tag Two', type: 'info' },
+  { name: 'Tag Three', type: 'success' },
+  { name: 'Tag Four', type: 'warning' },
+  { name: 'Tag Five', type: 'danger' }
+])
+const slideValue = ref(50)
+const radio = ref(3)
+
+watch(theme, () => {
+  toggleClass(document.body, 'custom-theme')
+})
 </script>
 
 <style scoped>

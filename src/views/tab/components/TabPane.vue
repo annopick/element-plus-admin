@@ -7,45 +7,45 @@
       width="65"
       element-loading-text="请给我点时间！"
     >
-      <template slot-scope="scope">
+      <template #default="scope">
         <span>{{ scope.row.id }}</span>
       </template>
     </el-table-column>
 
     <el-table-column width="180px" align="center" label="Date">
-      <template slot-scope="scope">
-        <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+      <template #default="scope">
+        <span>{{ parseTime(scope.row.timestamp, '{y}-{m}-{d} {h}:{i}') }}</span>
       </template>
     </el-table-column>
 
     <el-table-column min-width="300px" label="Title">
-      <template slot-scope="{row}">
+      <template #default="{ row }">
         <span>{{ row.title }}</span>
         <el-tag>{{ row.type }}</el-tag>
       </template>
     </el-table-column>
 
     <el-table-column width="110px" align="center" label="Author">
-      <template slot-scope="scope">
+      <template #default="scope">
         <span>{{ scope.row.author }}</span>
       </template>
     </el-table-column>
 
     <el-table-column width="120px" label="Importance">
-      <template slot-scope="scope">
-        <svg-icon v-for="n in +scope.row.importance" :key="n" icon-class="star" />
+      <template #default="scope">
+        <svg-icon v-for="n in Number(scope.row.importance) || 0" :key="n" icon-class="star" />
       </template>
     </el-table-column>
 
     <el-table-column align="center" label="Readings" width="95">
-      <template slot-scope="scope">
+      <template #default="scope">
         <span>{{ scope.row.pageviews }}</span>
       </template>
     </el-table-column>
 
     <el-table-column class-name="status-col" label="Status" width="110">
-      <template slot-scope="{row}">
-        <el-tag :type="row.status | statusFilter">
+      <template #default="{ row }">
+        <el-tag :type="statusFilter(row.status)">
           {{ row.status }}
         </el-tag>
       </template>
@@ -53,51 +53,49 @@
   </el-table>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, reactive } from 'vue'
 import { fetchList } from '@/api/article'
+import { parseTime } from '@/utils'
 
-export default {
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    }
-  },
-  props: {
-    type: {
-      type: String,
-      default: 'CN'
-    }
-  },
-  data() {
-    return {
-      list: null,
-      listQuery: {
-        page: 1,
-        limit: 5,
-        type: this.type,
-        sort: '+id'
-      },
-      loading: false
-    }
-  },
-  created() {
-    this.getList()
-  },
-  methods: {
-    getList() {
-      this.loading = true
-      this.$emit('create') // for test
-      fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.loading = false
-      })
-    }
+defineOptions({ name: 'TabPane' })
+
+const props = defineProps({
+  type: {
+    type: String,
+    default: 'CN'
   }
-}
-</script>
+})
 
+const emit = defineEmits<{ (e: 'create'): void }>()
+
+const statusMap: Record<string, 'success' | 'info' | 'warning' | 'danger'> = {
+  published: 'success',
+  draft: 'info',
+  deleted: 'danger'
+}
+
+function statusFilter(status: string) {
+  return statusMap[status]
+}
+
+const list = ref<any[]>([])
+const listQuery = reactive({
+  page: 1,
+  limit: 5,
+  type: props.type,
+  sort: '+id'
+})
+const loading = ref(false)
+
+function getList() {
+  loading.value = true
+  emit('create') // for test
+  fetchList(listQuery).then(response => {
+    list.value = response.data.items
+    loading.value = false
+  })
+}
+
+getList()
+</script>

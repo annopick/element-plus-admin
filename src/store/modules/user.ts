@@ -2,8 +2,9 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { login as loginApi, getInfo as getInfoApi, logout as logoutApi } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
-import { resetRouter } from '@/router'
+import router, { resetRouter } from '@/router'
 import { useTagsViewStore } from './tagsView'
+import { usePermissionStore } from './permission'
 
 export const useUserStore = defineStore('user', () => {
   const token = ref<string>(getToken() || '')
@@ -46,7 +47,19 @@ export const useUserStore = defineStore('user', () => {
     removeToken()
   }
 
-  // TODO Task 5+: re-add changeRoles action — needed by views/permission/components/SwitchRoles.vue
+  async function changeRoles(role: string) {
+    const newToken = role + '-token'
+    token.value = newToken
+    setToken(newToken)
 
-  return { token, name, avatar, introduction, roles, login, getInfo, logout, resetToken }
+    await getInfo()
+    resetRouter()
+
+    const accessRoutes = await usePermissionStore().generateRoutes(roles.value)
+    accessRoutes.forEach((route) => router.addRoute(route as any))
+
+    useTagsViewStore().delAllViews()
+  }
+
+  return { token, name, avatar, introduction, roles, login, getInfo, logout, resetToken, changeRoles }
 })
