@@ -1,79 +1,92 @@
 <template>
-  <el-scrollbar ref="scrollContainer" :vertical="false" class="scroll-container" @wheel.native.prevent="handleScroll">
+  <el-scrollbar ref="scrollContainer" class="scroll-container" @wheel.prevent="handleScroll">
     <slot />
   </el-scrollbar>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import type ElScrollbar from 'element-plus/es/components/scrollbar/index'
+
+const emit = defineEmits<{(e: 'scroll'): void}>()
+
 const tagAndTagSpacing = 4 // tagAndTagSpacing
 
-export default {
-  name: 'ScrollPane',
-  data() {
-    return {
-      left: 0
-    }
-  },
-  computed: {
-    scrollWrapper() {
-      return this.$refs.scrollContainer.$refs.wrap
-    }
-  },
-  mounted() {
-    this.scrollWrapper.addEventListener('scroll', this.emitScroll, true)
-  },
-  beforeDestroy() {
-    this.scrollWrapper.removeEventListener('scroll', this.emitScroll)
-  },
-  methods: {
-    handleScroll(e) {
-      const eventDelta = e.wheelDelta || -e.deltaY * 40
-      const $scrollWrapper = this.scrollWrapper
-      $scrollWrapper.scrollLeft = $scrollWrapper.scrollLeft + eventDelta / 4
-    },
-    emitScroll() {
-      this.$emit('scroll')
-    },
-    moveToTarget(currentTag) {
-      const $container = this.$refs.scrollContainer.$el
-      const $containerWidth = $container.offsetWidth
-      const $scrollWrapper = this.scrollWrapper
-      const tagList = this.$parent.$refs.tag
+const scrollContainer = ref<InstanceType<typeof ElScrollbar>>()
 
-      let firstTag = null
-      let lastTag = null
+const scrollWrapper = computed<HTMLElement | undefined>(() => {
+  // ElScrollbar exposes its inner wrap element via $refs.wrap
+  return (scrollContainer.value as any)?.wrapRef as HTMLElement | undefined
+})
 
-      // find first tag and last tag
-      if (tagList.length > 0) {
-        firstTag = tagList[0]
-        lastTag = tagList[tagList.length - 1]
-      }
+function handleScroll(e: WheelEvent) {
+  const eventDelta = (e as any).wheelDelta || -e.deltaY * 40
+  const $scrollWrapper = scrollWrapper.value
+  if ($scrollWrapper) {
+    $scrollWrapper.scrollLeft = $scrollWrapper.scrollLeft + eventDelta / 4
+  }
+}
 
-      if (firstTag === currentTag) {
-        $scrollWrapper.scrollLeft = 0
-      } else if (lastTag === currentTag) {
-        $scrollWrapper.scrollLeft = $scrollWrapper.scrollWidth - $containerWidth
-      } else {
-        // find preTag and nextTag
-        const currentIndex = tagList.findIndex(item => item === currentTag)
-        const prevTag = tagList[currentIndex - 1]
-        const nextTag = tagList[currentIndex + 1]
+function emitScroll() {
+  emit('scroll')
+}
 
-        // the tag's offsetLeft after of nextTag
-        const afterNextTagOffsetLeft = nextTag.$el.offsetLeft + nextTag.$el.offsetWidth + tagAndTagSpacing
+/**
+ * Move the scroll position so that the current tag is visible.
+ * In Vue2 this read `this.$parent.$refs.tag` (an array of router-link
+ * component instances). That coupling is broken in Vue3, so the parent
+ * TagsView now passes the current tag DOM element and the full ordered
+ * list of tag DOM elements directly.
+ */
+function moveToTarget(currentTag: HTMLElement, tagList: HTMLElement[]) {
+  const $container = (scrollContainer.value as any)?.$el as HTMLElement | undefined
+  const $scrollWrapper = scrollWrapper.value
+  if (!$container || !$scrollWrapper) return
 
-        // the tag's offsetLeft before of prevTag
-        const beforePrevTagOffsetLeft = prevTag.$el.offsetLeft - tagAndTagSpacing
+  const $containerWidth = $container.offsetWidth
 
-        if (afterNextTagOffsetLeft > $scrollWrapper.scrollLeft + $containerWidth) {
-          $scrollWrapper.scrollLeft = afterNextTagOffsetLeft - $containerWidth
-        } else if (beforePrevTagOffsetLeft < $scrollWrapper.scrollLeft) {
-          $scrollWrapper.scrollLeft = beforePrevTagOffsetLeft
-        }
-      }
+  let firstTag: HTMLElement | null = null
+  let lastTag: HTMLElement | null = null
+
+  // find first tag and last tag
+  if (tagList.length > 0) {
+    firstTag = tagList[0]
+    lastTag = tagList[tagList.length - 1]
+  }
+
+  if (firstTag === currentTag) {
+    $scrollWrapper.scrollLeft = 0
+  } else if (lastTag === currentTag) {
+    $scrollWrapper.scrollLeft = $scrollWrapper.scrollWidth - $containerWidth
+  } else {
+    // find preTag and nextTag
+    const currentIndex = tagList.findIndex(item => item === currentTag)
+    const prevTag = tagList[currentIndex - 1]
+    const nextTag = tagList[currentIndex + 1]
+
+    // the tag's offsetLeft after of nextTag
+    const afterNextTagOffsetLeft = nextTag.offsetLeft + nextTag.offsetWidth + tagAndTagSpacing
+
+    // the tag's offsetLeft before of prevTag
+    const beforePrevTagOffsetLeft = prevTag.offsetLeft - tagAndTagSpacing
+
+    if (afterNextTagOffsetLeft > $scrollWrapper.scrollLeft + $containerWidth) {
+      $scrollWrapper.scrollLeft = afterNextTagOffsetLeft - $containerWidth
+    } else if (beforePrevTagOffsetLeft < $scrollWrapper.scrollLeft) {
+      $scrollWrapper.scrollLeft = beforePrevTagOffsetLeft
     }
   }
 }
+
+onMounted(() => {
+  scrollWrapper.value?.addEventListener('scroll', emitScroll, true)
+})
+
+onBeforeUnmount(() => {
+  scrollWrapper.value?.removeEventListener('scroll', emitScroll)
+})
+
+defineExpose({ moveToTarget })
 </script>
 
 <style lang="scss" scoped>
@@ -82,7 +95,7 @@ export default {
   position: relative;
   overflow: hidden;
   width: 100%;
-  ::v-deep {
+  :deep() {
     .el-scrollbar__bar {
       bottom: 0px;
     }

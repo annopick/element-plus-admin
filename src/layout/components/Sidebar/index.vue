@@ -18,37 +18,37 @@
   </div>
 </template>
 
-<script>
-import { mapGetters } from 'vuex'
-import Logo from './Logo'
-import SidebarItem from './SidebarItem'
-import variables from '@/styles/variables.scss'
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+import Logo from './Logo.vue'
+import SidebarItem from './SidebarItem.vue'
+// Vite does not support webpack's `:export` SCSS→JS interop, so sidebar colors
+// are consumed from a TS constants module (mirrors variables.scss). See
+// src/styles/variables.ts for the rationale.
+import variables from '@/styles/variables'
+import { useAppStore } from '@/store/modules/app'
+import { usePermissionStore } from '@/store/modules/permission'
+import { useSettingsStore } from '@/store/modules/settings'
 
-export default {
-  components: { SidebarItem, Logo },
-  computed: {
-    ...mapGetters([
-      'permission_routes',
-      'sidebar'
-    ]),
-    activeMenu() {
-      const route = this.$route
-      const { meta, path } = route
-      // if set path, the sidebar will highlight the path you set
-      if (meta.activeMenu) {
-        return meta.activeMenu
-      }
-      return path
-    },
-    showLogo() {
-      return this.$store.state.settings.sidebarLogo
-    },
-    variables() {
-      return variables
-    },
-    isCollapse() {
-      return !this.sidebar.opened
-    }
+const route = useRoute()
+const appStore = useAppStore()
+const permissionStore = usePermissionStore()
+const settingsStore = useSettingsStore()
+
+const permission_routes = computed(() => permissionStore.routes)
+const sidebar = computed(() => appStore.sidebar)
+
+const activeMenu = computed(() => {
+  const { meta, path } = route
+  // if set path, the sidebar will highlight the path you set
+  if (meta.activeMenu) {
+    return meta.activeMenu as string
   }
-}
+  return path
+})
+
+const showLogo = computed(() => settingsStore.sidebarLogo)
+
+const isCollapse = computed(() => !sidebar.value.opened)
 </script>

@@ -27,57 +27,42 @@
   </div>
 </template>
 
-<script>
-import ThemePicker from '@/components/ThemePicker'
+<script setup lang="ts">
+import { computed } from 'vue'
+import ThemePicker from '@/components/ThemePicker/index.vue'
+import { useSettingsStore } from '@/store/modules/settings'
 
-export default {
-  components: { ThemePicker },
-  data() {
-    return {}
+const settingsStore = useSettingsStore()
+
+const fixedHeader = computed({
+  get() {
+    return settingsStore.fixedHeader
   },
-  computed: {
-    fixedHeader: {
-      get() {
-        return this.$store.state.settings.fixedHeader
-      },
-      set(val) {
-        this.$store.dispatch('settings/changeSetting', {
-          key: 'fixedHeader',
-          value: val
-        })
-      }
-    },
-    tagsView: {
-      get() {
-        return this.$store.state.settings.tagsView
-      },
-      set(val) {
-        this.$store.dispatch('settings/changeSetting', {
-          key: 'tagsView',
-          value: val
-        })
-      }
-    },
-    sidebarLogo: {
-      get() {
-        return this.$store.state.settings.sidebarLogo
-      },
-      set(val) {
-        this.$store.dispatch('settings/changeSetting', {
-          key: 'sidebarLogo',
-          value: val
-        })
-      }
-    }
-  },
-  methods: {
-    themeChange(val) {
-      this.$store.dispatch('settings/changeSetting', {
-        key: 'theme',
-        value: val
-      })
-    }
+  set(val: boolean) {
+    settingsStore.changeSetting({ key: 'fixedHeader', value: val })
   }
+})
+
+const tagsView = computed({
+  get() {
+    return settingsStore.tagsView
+  },
+  set(val: boolean) {
+    settingsStore.changeSetting({ key: 'tagsView', value: val })
+  }
+})
+
+const sidebarLogo = computed({
+  get() {
+    return settingsStore.sidebarLogo
+  },
+  set(val: boolean) {
+    settingsStore.changeSetting({ key: 'sidebarLogo', value: val })
+  }
+})
+
+function themeChange(val: string) {
+  settingsStore.changeSetting({ key: 'theme', value: val })
 }
 </script>
 

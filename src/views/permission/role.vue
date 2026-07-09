@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import path from 'path'
+import path from '@/utils/path'
 import { deepClone } from '@/utils'
 import { getRoutes, getRoles, addRole, deleteRole, updateRole } from '@/api/role'
 

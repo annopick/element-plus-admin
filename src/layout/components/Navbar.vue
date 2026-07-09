@@ -21,64 +21,60 @@
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
           <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-          <i class="el-icon-caret-bottom" />
+          <el-icon class="caret-bottom"><CaretBottom /></el-icon>
         </div>
-        <el-dropdown-menu slot="dropdown">
-          <router-link to="/profile/index">
-            <el-dropdown-item>Profile</el-dropdown-item>
-          </router-link>
-          <router-link to="/">
-            <el-dropdown-item>Dashboard</el-dropdown-item>
-          </router-link>
-          <a target="_blank" href="https://github.com/PanJiaChen/vue-element-admin/">
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
-          <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">Log Out</span>
-          </el-dropdown-item>
-        </el-dropdown-menu>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <router-link to="/profile/index">
+              <el-dropdown-item>Profile</el-dropdown-item>
+            </router-link>
+            <router-link to="/">
+              <el-dropdown-item>Dashboard</el-dropdown-item>
+            </router-link>
+            <a target="_blank" href="https://github.com/PanJiaChen/vue-element-admin/">
+              <el-dropdown-item>Github</el-dropdown-item>
+            </a>
+            <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
+              <el-dropdown-item>Docs</el-dropdown-item>
+            </a>
+            <el-dropdown-item divided @click="logout">
+              <span style="display:block;">Log Out</span>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
       </el-dropdown>
     </div>
   </div>
 </template>
 
-<script>
-import { mapGetters } from 'vuex'
-import Breadcrumb from '@/components/Breadcrumb'
-import Hamburger from '@/components/Hamburger'
-import ErrorLog from '@/components/ErrorLog'
-import Screenfull from '@/components/Screenfull'
-import SizeSelect from '@/components/SizeSelect'
-import Search from '@/components/HeaderSearch'
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import Breadcrumb from '@/components/Breadcrumb/index.vue'
+import Hamburger from '@/components/Hamburger/index.vue'
+import ErrorLog from '@/components/ErrorLog/index.vue'
+import Screenfull from '@/components/Screenfull/index.vue'
+import SizeSelect from '@/components/SizeSelect/index.vue'
+import Search from '@/components/HeaderSearch/index.vue'
+import { useAppStore } from '@/store/modules/app'
+import { useUserStore } from '@/store/modules/user'
 
-export default {
-  components: {
-    Breadcrumb,
-    Hamburger,
-    ErrorLog,
-    Screenfull,
-    SizeSelect,
-    Search
-  },
-  computed: {
-    ...mapGetters([
-      'sidebar',
-      'avatar',
-      'device'
-    ])
-  },
-  methods: {
-    toggleSideBar() {
-      this.$store.dispatch('app/toggleSideBar')
-    },
-    async logout() {
-      await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
-    }
-  }
+const route = useRoute()
+const router = useRouter()
+const appStore = useAppStore()
+const userStore = useUserStore()
+
+const sidebar = computed(() => appStore.sidebar)
+const avatar = computed(() => userStore.avatar)
+const device = computed(() => appStore.device)
+
+function toggleSideBar() {
+  appStore.toggleSideBar()
+}
+
+async function logout() {
+  await userStore.logout()
+  router.push(`/login?redirect=${route.fullPath}`)
 }
 </script>
 
@@ -153,7 +149,7 @@ export default {
           border-radius: 10px;
         }
 
-        .el-icon-caret-bottom {
+        .caret-bottom {
           cursor: pointer;
           position: absolute;
           right: -20px;

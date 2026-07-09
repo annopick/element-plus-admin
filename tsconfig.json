@@ -1,0 +1,23 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": { "@/*": ["src/*"] },
+    "types": ["element-plus/global", "node"],
+    "strict": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": false,
+    "noEmit": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "env.d.ts",
+    "types/**/*.d.ts"
+  ],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}

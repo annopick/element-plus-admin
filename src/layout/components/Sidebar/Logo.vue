@@ -13,22 +13,11 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'SidebarLogo',
-  props: {
-    collapse: {
-      type: Boolean,
-      required: true
-    }
-  },
-  data() {
-    return {
-      title: 'Vue Element Admin',
-      logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'
-    }
-  }
-}
+<script setup lang="ts">
+withDefaults(defineProps<{ collapse: boolean }>(), { collapse: false })
+
+const title = 'Vue Element Admin'
+const logo = 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'
 </script>
 
 <style lang="scss" scoped>
@@ -36,7 +25,7 @@ export default {
   transition: opacity 1.5s;
 }
 
-.sidebarLogoFade-enter,
+.sidebarLogoFade-enter-from,
 .sidebarLogoFade-leave-to {
   opacity: 0;
 }

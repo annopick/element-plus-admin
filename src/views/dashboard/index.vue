@@ -4,28 +4,21 @@
   </div>
 </template>
 
-<script>
-import { mapGetters } from 'vuex'
-import adminDashboard from './admin'
-import editorDashboard from './editor'
+<script setup lang="ts">
+import { shallowRef } from 'vue'
+import { useUserStore } from '@/store/modules/user'
+import adminDashboard from './admin/index.vue'
+import editorDashboard from './editor/index.vue'
 
-export default {
-  name: 'Dashboard',
-  components: { adminDashboard, editorDashboard },
-  data() {
-    return {
-      currentRole: 'adminDashboard'
-    }
-  },
-  computed: {
-    ...mapGetters([
-      'roles'
-    ])
-  },
-  created() {
-    if (!this.roles.includes('admin')) {
-      this.currentRole = 'editorDashboard'
-    }
-  }
+defineOptions({ name: 'Dashboard' })
+
+const userStore = useUserStore()
+
+// Vue 3 <component :is> takes a component object, not a string name.
+// shallowRef avoids deep reactivity on the component object (prevents Vue warnings).
+const currentRole = shallowRef(adminDashboard)
+
+if (!userStore.roles.includes('admin')) {
+  currentRole.value = editorDashboard
 }
 </script>

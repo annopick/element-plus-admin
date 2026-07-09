@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import SwitchRoles from './components/SwitchRoles'
+import SwitchRoles from './components/SwitchRoles.vue'
 
 export default {
   name: 'PagePermission',

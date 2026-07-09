@@ -4,48 +4,44 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import screenfull from 'screenfull'
+import { ElMessage } from 'element-plus'
 
-export default {
-  name: 'Screenfull',
-  data() {
-    return {
-      isFullscreen: false
-    }
-  },
-  mounted() {
-    this.init()
-  },
-  beforeDestroy() {
-    this.destroy()
-  },
-  methods: {
-    click() {
-      if (!screenfull.enabled) {
-        this.$message({
-          message: 'you browser can not work',
-          type: 'warning'
-        })
-        return false
-      }
-      screenfull.toggle()
-    },
-    change() {
-      this.isFullscreen = screenfull.isFullscreen
-    },
-    init() {
-      if (screenfull.enabled) {
-        screenfull.on('change', this.change)
-      }
-    },
-    destroy() {
-      if (screenfull.enabled) {
-        screenfull.off('change', this.change)
-      }
-    }
+defineOptions({ name: 'Screenfull' })
+
+const isFullscreen = ref(false)
+
+function change(): void {
+  isFullscreen.value = screenfull.isFullscreen
+}
+
+function click(): boolean | void {
+  if (!screenfull.isEnabled) {
+    ElMessage({
+      message: 'you browser can not work',
+      type: 'warning'
+    })
+    return false
+  }
+  screenfull.toggle()
+}
+
+function init(): void {
+  if (screenfull.isEnabled) {
+    screenfull.on('change', change)
   }
 }
+
+function destroy(): void {
+  if (screenfull.isEnabled) {
+    screenfull.off('change', change)
+  }
+}
+
+onMounted(init)
+onBeforeUnmount(destroy)
 </script>
 
 <style scoped>

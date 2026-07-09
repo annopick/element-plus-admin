@@ -8,7 +8,18 @@
 </template>
 
 <script>
-const version = require('element-ui/package.json').version // element-ui version from node_modules
+// NOTE: This component is Phase 4 scope (element-ui → element-plus theme
+// customization). The original `require('element-ui/package.json').version`
+// is a CommonJS call that (a) is unavailable in the browser ESM context and
+// (b) references the removed element-ui dependency. Guarded here so importing
+// the component no longer crashes the Layout shell. Full migration is deferred.
+let version = '2.15.14' // fallback element-ui version (unpkg URL still resolves)
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  version = require('element-ui/package.json').version
+} catch (e) {
+  // element-ui is not installed (Vue 3 migration); keep the fallback above.
+}
 const ORIGINAL_THEME = '#409EFF' // default color
 
 export default {
@@ -19,8 +30,13 @@ export default {
     }
   },
   computed: {
+    // NOTE: original was `this.$store.state.settings.theme` (Vuex). The Vuex
+    // store is gone (Pinia migration), so this would throw at runtime. The
+    // theme-customization feature depends on element-ui and is deferred to
+    // Phase 4; return '' (no theme) so the component no longer crashes the
+    // Layout shell. Full migration will wire this to useSettingsStore().
     defaultTheme() {
-      return this.$store.state.settings.theme
+      return ''
     }
   },
   watch: {
@@ -31,58 +47,9 @@ export default {
       immediate: true
     },
     async theme(val) {
-      const oldVal = this.chalk ? this.theme : ORIGINAL_THEME
-      if (typeof val !== 'string') return
-      const themeCluster = this.getThemeCluster(val.replace('#', ''))
-      const originalCluster = this.getThemeCluster(oldVal.replace('#', ''))
-      console.log(themeCluster, originalCluster)
-
-      const $message = this.$message({
-        message: '  Compiling the theme',
-        customClass: 'theme-message',
-        type: 'success',
-        duration: 0,
-        iconClass: 'el-icon-loading'
-      })
-
-      const getHandler = (variable, id) => {
-        return () => {
-          const originalCluster = this.getThemeCluster(ORIGINAL_THEME.replace('#', ''))
-          const newStyle = this.updateStyle(this[variable], originalCluster, themeCluster)
-
-          let styleTag = document.getElementById(id)
-          if (!styleTag) {
-            styleTag = document.createElement('style')
-            styleTag.setAttribute('id', id)
-            document.head.appendChild(styleTag)
-          }
-          styleTag.innerText = newStyle
-        }
-      }
-
-      if (!this.chalk) {
-        const url = `https://unpkg.com/element-ui@${version}/lib/theme-chalk/index.css`
-        await this.getCSSString(url, 'chalk')
-      }
-
-      const chalkHandler = getHandler('chalk', 'chalk-style')
-
-      chalkHandler()
-
-      const styles = [].slice.call(document.querySelectorAll('style'))
-        .filter(style => {
-          const text = style.innerText
-          return new RegExp(oldVal, 'i').test(text) && !/Chalk Variables/.test(text)
-        })
-      styles.forEach(style => {
-        const { innerText } = style
-        if (typeof innerText !== 'string') return
-        style.innerText = this.updateStyle(innerText, originalCluster, themeCluster)
-      })
-
-      this.$emit('change', val)
-
-      $message.close()
+      // TODO Phase 3: rebuild theme customization for Element Plus (CSS variables).
+      // The original element-ui chalk-CSS rewriting approach is incompatible with Element Plus.
+      // Until then, this picker renders but is intentionally non-functional.
     }
   },
 

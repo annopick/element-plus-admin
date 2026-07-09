@@ -2,56 +2,72 @@
   <div class="dashboard-editor-container">
     <github-corner class="github-corner" />
 
-    <panel-group @handleSetLineChartData="handleSetLineChartData" />
+    <panel-group @handle-set-line-chart-data="handleSetLineChartData" />
 
     <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
-      <line-chart :chart-data="lineChartData" />
+      <!-- TODO Phase 4: LineChart (echarts 5) -->
+      <div class="chart-placeholder">
+        <div class="placeholder-box">
+          Line Chart (Phase 4)
+          <div v-if="currentChartData" class="placeholder-data">
+            expected: {{ currentChartData.expectedData.join(', ') }}<br>
+            actual: {{ currentChartData.actualData.join(', ') }}
+          </div>
+        </div>
+      </div>
     </el-row>
 
     <el-row :gutter="32">
       <el-col :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
-          <raddar-chart />
+          <!-- TODO Phase 4: RaddarChart (echarts 5) -->
+          <div class="chart-placeholder"><div class="placeholder-box">Raddar Chart (Phase 4)</div></div>
         </div>
       </el-col>
       <el-col :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
-          <pie-chart />
+          <!-- TODO Phase 4: PieChart (echarts 5) -->
+          <div class="chart-placeholder"><div class="placeholder-box">Pie Chart (Phase 4)</div></div>
         </div>
       </el-col>
       <el-col :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
-          <bar-chart />
+          <!-- TODO Phase 4: BarChart (echarts 5) -->
+          <div class="chart-placeholder"><div class="placeholder-box">Bar Chart (Phase 4)</div></div>
         </div>
       </el-col>
     </el-row>
 
     <el-row :gutter="8">
-      <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 12}" :xl="{span: 12}" style="padding-right:8px;margin-bottom:30px;">
-        <transaction-table />
+      <el-col :xs="{ span: 24 }" :sm="{ span: 24 }" :md="{ span: 24 }" :lg="{ span: 12 }" :xl="{ span: 12 }" style="padding-right:8px;margin-bottom:30px;">
+        <!-- TODO Phase 2+: TransactionTable -->
+        <div class="chart-placeholder"><div class="placeholder-box">Transaction Table (Phase 2+)</div></div>
       </el-col>
-      <el-col :xs="{span: 24}" :sm="{span: 12}" :md="{span: 12}" :lg="{span: 6}" :xl="{span: 6}" style="margin-bottom:30px;">
-        <todo-list />
+      <el-col :xs="{ span: 24 }" :sm="{ span: 12 }" :md="{ span: 12 }" :lg="{ span: 6 }" :xl="{ span: 6 }" style="margin-bottom:30px;">
+        <!-- TODO Phase 2+: TodoList -->
+        <div class="chart-placeholder"><div class="placeholder-box">Todo List (Phase 2+)</div></div>
       </el-col>
-      <el-col :xs="{span: 24}" :sm="{span: 12}" :md="{span: 12}" :lg="{span: 6}" :xl="{span: 6}" style="margin-bottom:30px;">
-        <box-card />
+      <el-col :xs="{ span: 24 }" :sm="{ span: 12 }" :md="{ span: 12 }" :lg="{ span: 6 }" :xl="{ span: 6 }" style="margin-bottom:30px;">
+        <!-- TODO Phase 2+: BoxCard -->
+        <div class="chart-placeholder"><div class="placeholder-box">Box Card (Phase 2+)</div></div>
       </el-col>
     </el-row>
   </div>
 </template>
 
-<script>
-import GithubCorner from '@/components/GithubCorner'
-import PanelGroup from './components/PanelGroup'
-import LineChart from './components/LineChart'
-import RaddarChart from './components/RaddarChart'
-import PieChart from './components/PieChart'
-import BarChart from './components/BarChart'
-import TransactionTable from './components/TransactionTable'
-import TodoList from './components/TodoList'
-import BoxCard from './components/BoxCard'
+<script setup lang="ts">
+import { ref } from 'vue'
+import GithubCorner from '@/components/GithubCorner/index.vue'
+import PanelGroup from './components/PanelGroup.vue'
 
-const lineChartData = {
+defineOptions({ name: 'DashboardAdmin' })
+
+interface LineChartData {
+  expectedData: number[]
+  actualData: number[]
+}
+
+const lineChartData: Record<string, LineChartData> = {
   newVisitis: {
     expectedData: [100, 120, 161, 134, 105, 160, 165],
     actualData: [120, 82, 91, 154, 162, 140, 145]
@@ -70,29 +86,10 @@ const lineChartData = {
   }
 }
 
-export default {
-  name: 'DashboardAdmin',
-  components: {
-    GithubCorner,
-    PanelGroup,
-    LineChart,
-    RaddarChart,
-    PieChart,
-    BarChart,
-    TransactionTable,
-    TodoList,
-    BoxCard
-  },
-  data() {
-    return {
-      lineChartData: lineChartData.newVisitis
-    }
-  },
-  methods: {
-    handleSetLineChartData(type) {
-      this.lineChartData = lineChartData[type]
-    }
-  }
+const currentChartData = ref<LineChartData>(lineChartData.newVisitis)
+
+function handleSetLineChartData(type: string) {
+  currentChartData.value = lineChartData[type]
 }
 </script>
 
@@ -113,6 +110,28 @@ export default {
     background: #fff;
     padding: 16px 16px 0;
     margin-bottom: 32px;
+  }
+
+  .chart-placeholder {
+    background: #fff;
+    min-height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .placeholder-box {
+    color: #999;
+    text-align: center;
+    width: 100%;
+  }
+
+  .placeholder-data {
+    margin-top: 12px;
+    font-size: 12px;
+    color: #bbb;
+    line-height: 1.6;
+    word-break: break-all;
   }
 }
 

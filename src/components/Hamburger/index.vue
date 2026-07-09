@@ -13,20 +13,21 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'Hamburger',
-  props: {
-    isActive: {
-      type: Boolean,
-      default: false
-    }
-  },
-  methods: {
-    toggleClick() {
-      this.$emit('toggleClick')
-    }
-  }
+<script setup lang="ts">
+defineOptions({ name: 'Hamburger' })
+
+withDefaults(defineProps<{
+  isActive?: boolean
+}>(), {
+  isActive: false
+})
+
+const emit = defineEmits<{
+  (e: 'toggleClick'): void
+}>()
+
+function toggleClick(): void {
+  emit('toggleClick')
 }
 </script>
 
