@@ -1,10 +1,19 @@
-import { onMounted, onBeforeUnmount, onActivated, onDeactivated, type Ref } from 'vue'
+import type { ECharts } from 'echarts'
+import { onMounted, onBeforeUnmount, onActivated, onDeactivated } from 'vue'
 import { debounce } from '@/utils'
 
 // Replaces src/components/Charts/mixins/resize.js.
-// Phase 4 will flesh out the full echarts resize logic. For now this provides
-// the resize-listener scaffolding (window resize + sidebar transitionend).
-export function useChartResize(chartRef: Ref<any>) {
+//
+// The composable wires up window `resize` and sidebar `transitionend` listeners
+// and forwards them to the chart instance's `resize()` method. Callers pass a
+// getter that returns the echarts instance (not the DOM element ref), because
+// the instance is created lazily inside `onMounted` and may be `null` until
+// then, and `HTMLElement` has no `resize` method.
+//
+//   const chartRef = ref<HTMLElement>()
+//   let chart: ECharts | null = null
+//   useChartResize(() => chart)
+export function useChartResize(getChart: () => ECharts | null) {
   let resizeHandler: (() => void) | null = null
   let sidebarElm: Element | null = null
 
@@ -15,7 +24,7 @@ export function useChartResize(chartRef: Ref<any>) {
   }
 
   const resize = (): void => {
-    const chart = chartRef.value
+    const chart = getChart()
     chart && chart.resize()
   }
 

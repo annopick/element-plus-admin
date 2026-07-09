@@ -24,7 +24,7 @@ const props = withDefaults(defineProps<{
 const chartRef = ref<HTMLElement>()
 let chart: echarts.ECharts | null = null
 
-useChartResize(chartRef as any)
+useChartResize(() => chart)
 
 onMounted(() => {
   nextTick(() => {
