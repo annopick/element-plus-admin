@@ -128,6 +128,13 @@
         .sub-el-icon {
           margin-left: 19px;
         }
+
+        // Hide text spans that leak out in collapsed mode.
+        // Element Plus wraps the icon in .el-tooltip__trigger > span,
+        // so we hide spans that are NOT inside the tooltip trigger.
+        > span:not(.el-tooltip__trigger) {
+          display: none;
+        }
       }
     }
 
