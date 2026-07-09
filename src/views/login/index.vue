@@ -196,12 +196,17 @@ $cursor: #fff;
   }
 }
 
-/* reset element-ui css */
+/* reset element-plus css */
 .login-container {
   .el-input {
     display: inline-block;
     height: 47px;
     width: 85%;
+
+    .el-input__wrapper {
+      background-color: transparent;
+      box-shadow: none;
+    }
 
     input {
       background: transparent;
