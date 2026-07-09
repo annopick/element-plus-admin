@@ -33,7 +33,7 @@
 
     <el-table-column width="120px" label="Importance">
       <template #default="scope">
-        <svg-icon v-for="n in +scope.row.importance" :key="n" icon-class="star" />
+        <svg-icon v-for="n in Number(scope.row.importance) || 0" :key="n" icon-class="star" />
       </template>
     </el-table-column>
 
