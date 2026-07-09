@@ -3,51 +3,51 @@
     <!-- Note that row-key is necessary to get a correct row order. -->
     <el-table ref="dragTable" v-loading="listLoading" :data="list" row-key="id" border fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label="ID" width="65">
-        <template slot-scope="{row}">
+        <template #default="{ row }">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
 
       <el-table-column width="180px" align="center" label="Date">
-        <template slot-scope="{row}">
-          <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+        <template #default="{ row }">
+          <span>{{ parseTime(row.timestamp, '{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
       </el-table-column>
 
       <el-table-column min-width="300px" label="Title">
-        <template slot-scope="{row}">
+        <template #default="{ row }">
           <span>{{ row.title }}</span>
         </template>
       </el-table-column>
 
       <el-table-column width="110px" align="center" label="Author">
-        <template slot-scope="{row}">
+        <template #default="{ row }">
           <span>{{ row.author }}</span>
         </template>
       </el-table-column>
 
       <el-table-column width="100px" label="Importance">
-        <template slot-scope="{row}">
-          <svg-icon v-for="n in + row.importance" :key="n" icon-class="star" class="icon-star" />
+        <template #default="{ row }">
+          <svg-icon v-for="n in +row.importance" :key="n" icon-class="star" class="icon-star" />
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="Readings" width="95">
-        <template slot-scope="{row}">
+        <template #default="{ row }">
           <span>{{ row.pageviews }}</span>
         </template>
       </el-table-column>
 
       <el-table-column class-name="status-col" label="Status" width="110">
-        <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
+        <template #default="{ row }">
+          <el-tag :type="statusFilter(row.status)">
             {{ row.status }}
           </el-tag>
         </template>
       </el-table-column>
 
       <el-table-column align="center" label="Drag" width="80">
-        <template slot-scope="{}">
+        <template #default>
           <svg-icon class="drag-handler" icon-class="drag" />
         </template>
       </el-table-column>
@@ -61,73 +61,84 @@
   </div>
 </template>
 
-<script>
-import { fetchList } from '@/api/article'
+<script setup lang="ts">
+import { ref, reactive, nextTick } from 'vue'
 import Sortable from 'sortablejs'
+import { fetchList } from '@/api/article'
+import { parseTime } from '@/utils'
 
-export default {
-  name: 'DragTable',
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    }
-  },
-  data() {
-    return {
-      list: null,
-      total: null,
-      listLoading: true,
-      listQuery: {
-        page: 1,
-        limit: 10
-      },
-      sortable: null,
-      oldList: [],
-      newList: []
-    }
-  },
-  created() {
-    this.getList()
-  },
-  methods: {
-    async getList() {
-      this.listLoading = true
-      const { data } = await fetchList(this.listQuery)
-      this.list = data.items
-      this.total = data.total
-      this.listLoading = false
-      this.oldList = this.list.map(v => v.id)
-      this.newList = this.oldList.slice()
-      this.$nextTick(() => {
-        this.setSort()
-      })
+defineOptions({ name: 'DragTable' })
+
+interface ArticleRow {
+  id: number
+  timestamp: number
+  title: string
+  author: string
+  importance: number
+  pageviews: number
+  status: string
+  [key: string]: any
+}
+
+const statusMap: Record<string, 'success' | 'info' | 'warning' | 'danger'> = {
+  published: 'success',
+  draft: 'info',
+  deleted: 'danger'
+}
+
+function statusFilter(status: string) {
+  return statusMap[status]
+}
+
+const dragTableRef = ref<any>()
+const list = ref<ArticleRow[]>([])
+const total = ref<number>(0)
+const listLoading = ref(true)
+const listQuery = reactive({
+  page: 1,
+  limit: 10
+})
+let sortable: Sortable | null = null
+const oldList = ref<number[]>([])
+const newList = ref<number[]>([])
+
+async function getList() {
+  listLoading.value = true
+  const { data } = await fetchList(listQuery)
+  list.value = data.items
+  total.value = data.total
+  listLoading.value = false
+  oldList.value = list.value.map(v => v.id)
+  newList.value = oldList.value.slice()
+  nextTick(() => {
+    setSort()
+  })
+}
+
+function setSort() {
+  const el = dragTableRef.value?.$el.querySelectorAll('.el-table__body-wrapper > table > tbody')[0] as HTMLElement
+  const options: Sortable.SortableOptions = {
+    ghostClass: 'sortable-ghost', // Class name for the drop placeholder,
+    setData: function(dataTransfer: DataTransfer) {
+      // to avoid Firefox bug
+      // Detail see : https://github.com/RubaXa/Sortable/issues/1012
+      dataTransfer.setData('Text', '')
     },
-    setSort() {
-      const el = this.$refs.dragTable.$el.querySelectorAll('.el-table__body-wrapper > table > tbody')[0]
-      this.sortable = Sortable.create(el, {
-        ghostClass: 'sortable-ghost', // Class name for the drop placeholder,
-        setData: function(dataTransfer) {
-          // to avoid Firefox bug
-          // Detail see : https://github.com/RubaXa/Sortable/issues/1012
-          dataTransfer.setData('Text', '')
-        },
-        onEnd: evt => {
-          const targetRow = this.list.splice(evt.oldIndex, 1)[0]
-          this.list.splice(evt.newIndex, 0, targetRow)
+    onEnd: (evt: Sortable.SortableEvent) => {
+      const { oldIndex, newIndex } = evt
+      if (oldIndex === undefined || newIndex === undefined) return
+      const targetRow = list.value.splice(oldIndex, 1)[0]
+      list.value.splice(newIndex, 0, targetRow)
 
-          // for show the changes, you can delete in you code
-          const tempIndex = this.newList.splice(evt.oldIndex, 1)[0]
-          this.newList.splice(evt.newIndex, 0, tempIndex)
-        }
-      })
+      // for show the changes, you can delete in you code
+      const tempIndex = newList.value.splice(oldIndex, 1)[0]
+      newList.value.splice(newIndex, 0, tempIndex)
     }
   }
+  sortable = Sortable.create(el, options)
 }
+
+getList()
 </script>
 
 <style>
