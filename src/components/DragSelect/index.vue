@@ -1,56 +1,74 @@
 <template>
-  <el-select ref="dragSelect" v-model="selectVal" v-bind="$attrs" class="drag-select" multiple v-on="$listeners">
+  <el-select
+    ref="dragSelect"
+    v-model="selectVal"
+    v-bind="$attrs"
+    class="drag-select"
+    multiple
+  >
     <slot />
   </el-select>
 </template>
 
-<script>
+<script setup lang="ts">
 import Sortable from 'sortablejs'
+import { computed, onMounted, ref } from 'vue'
+import type { SelectInstance } from 'element-plus'
 
-export default {
-  name: 'DragSelect',
-  props: {
-    value: {
-      type: Array,
-      required: true
-    }
+defineOptions({ name: 'DragSelect', inheritAttrs: false })
+
+const props = defineProps<{
+  modelValue: Array<string | number>
+}>()
+
+const emit = defineEmits<{
+  (e: 'update:modelValue', val: Array<string | number>): void
+}>()
+
+const dragSelect = ref<SelectInstance | null>(null)
+let sortable: Sortable | null = null
+
+const selectVal = computed<Array<string | number>>({
+  get() {
+    return [...props.modelValue]
   },
-  computed: {
-    selectVal: {
-      get() {
-        return [...this.value]
-      },
-      set(val) {
-        this.$emit('input', [...val])
-      }
-    }
-  },
-  mounted() {
-    this.setSort()
-  },
-  methods: {
-    setSort() {
-      const el = this.$refs.dragSelect.$el.querySelectorAll('.el-select__tags > span')[0]
-      this.sortable = Sortable.create(el, {
-        ghostClass: 'sortable-ghost', // Class name for the drop placeholder,
-        setData: function(dataTransfer) {
-          dataTransfer.setData('Text', '')
-          // to avoid Firefox bug
-          // Detail see : https://github.com/RubaXa/Sortable/issues/1012
-        },
-        onEnd: evt => {
-          const targetRow = this.value.splice(evt.oldIndex, 1)[0]
-          this.value.splice(evt.newIndex, 0, targetRow)
-        }
-      })
-    }
+  set(val) {
+    emit('update:modelValue', [...val])
   }
+})
+
+function setSort() {
+  const selectEl = (dragSelect.value as any)?.$el as HTMLElement | undefined
+  if (!selectEl) return
+  // Element Plus renders the selected tags inside `.el-select__selection`.
+  // Fall back to `.el-select__tags` (legacy) for safety.
+  let el = selectEl.querySelector<HTMLElement>('.el-select__selection')
+  if (!el) {
+    el = selectEl.querySelector<HTMLElement>('.el-select__tags')
+  }
+  if (!el) return
+  sortable = Sortable.create(el, {
+    ghostClass: 'sortable-ghost', // Class name for the drop placeholder
+    setData(dataTransfer: DataTransfer) {
+      dataTransfer.setData('Text', '')
+      // to avoid Firefox bug
+      // Detail see : https://github.com/RubaXa/Sortable/issues/1012
+    },
+    onEnd: evt => {
+      const targetRow = props.modelValue.splice(evt.oldIndex as number, 1)[0]
+      props.modelValue.splice(evt.newIndex as number, 0, targetRow)
+    }
+  })
 }
+
+onMounted(() => {
+  setSort()
+})
 </script>
 
 <style lang="scss" scoped>
 .drag-select {
-  ::v-deep {
+  :deep() {
     .sortable-ghost {
       opacity: .8;
       color: #fff !important;
