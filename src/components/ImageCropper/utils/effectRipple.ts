@@ -1,20 +1,28 @@
 /**
  * 点击波纹效果
  *
- * @param  {[event]} e        [description]
- * @param  {[Object]} arg_opts [description]
- * @return {[bollean]}          [description]
+ * @param  e
+ * @param  arg_opts
  */
-export default function(e, arg_opts) {
-  var opts = Object.assign({
+interface RippleOptions {
+  /** 波纹作用元素 */
+  ele?: HTMLElement | EventTarget | null
+  /** hit点击位置扩散 center中心点扩展 */
+  type?: 'hit' | 'center'
+  /** 波纹颜色 */
+  bgc?: string
+}
+
+export default function effectRipple(e: MouseEvent, arg_opts?: RippleOptions): boolean | undefined {
+  const opts: Required<Pick<RippleOptions, 'type' | 'bgc'>> & Pick<RippleOptions, 'ele'> = Object.assign({
     ele: e.target, // 波纹作用元素
     type: 'hit', // hit点击位置扩散center中心点扩展
     bgc: 'rgba(0, 0, 0, 0.15)' // 波纹颜色
   }, arg_opts)
-  var target = opts.ele
+  const target = opts.ele as HTMLElement | null
   if (target) {
-    var rect = target.getBoundingClientRect()
-    var ripple = target.querySelector('.e-ripple')
+    const rect = target.getBoundingClientRect()
+    let ripple = target.querySelector('.e-ripple') as HTMLSpanElement | null
     if (!ripple) {
       ripple = document.createElement('span')
       ripple.className = 'e-ripple'

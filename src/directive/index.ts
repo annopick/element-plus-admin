@@ -4,6 +4,7 @@ import clipboard from './clipboard/clipboard'
 import waves from './waves/waves'
 import drag from './el-drag-dialog/drag'
 import adaptive from './el-table/adaptive'
+import sticky from './sticky'
 
 export function setupDirectives(app: App) {
   app.directive('permission', permission)
@@ -11,4 +12,5 @@ export function setupDirectives(app: App) {
   app.directive('waves', waves)
   app.directive('drag-dialog', drag)
   app.directive('adaptive', adaptive)
+  app.directive('sticky', sticky)
 }
