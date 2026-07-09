@@ -14,6 +14,7 @@ import router from './router'
 import store from './store'
 import { setupIcons } from './icons'
 import { setupDirectives } from './directive'
+import { setupErrorLog } from './utils/error-log'
 
 import './permission'
 
@@ -28,6 +29,7 @@ setupIcons(app)
 setupDirectives(app)
 
 app.use(store)
+setupErrorLog(app)
 app.use(router)
 app.use(ElementPlus, {
   locale: zhCn,
