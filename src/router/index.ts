@@ -1,6 +1,9 @@
 import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
 import Layout from '@/layout/index.vue'
 import tableRouter from './modules/table'
+import componentsRouter from './modules/components'
+import chartsRouter from './modules/charts'
+import nestedRouter from './modules/nested'
 
 // vue-router 4's `RouteRecordRaw` is a discriminated union (single-view | multiple-views | redirect),
 // so an interface cannot extend it. Use a type intersection instead to preserve the recursive
@@ -91,7 +94,6 @@ export const constantRoutes: AppRouteRecord[] = [
       }
     ]
   } as AppRouteRecord
-  // TODO Phase 4: restore /documentation, /guide routes when views are migrated
 ]
 
 /**
@@ -101,6 +103,7 @@ export const constantRoutes: AppRouteRecord[] = [
 export const asyncRoutes: AppRouteRecord[] = [
   // Phase 2: permission, table, example routes restored.
   // Phase 3: profile, theme, clipboard, tab, icons, error-log routes restored.
+  // Phase 4: components, charts, nested, excel, zip, pdf, guide, documentation, external-link routes restored.
   {
     path: '/permission',
     component: Layout,
@@ -143,7 +146,6 @@ export const asyncRoutes: AppRouteRecord[] = [
     ]
   } as AppRouteRecord,
   // Phase 3: profile, theme, clipboard, tab, icons, error-log routes restored.
-  // TODO Phase 4: restore components, charts, nested, error, excel, zip, pdf, external-link routes
   {
     path: '/profile',
     component: Layout,
@@ -186,6 +188,71 @@ export const asyncRoutes: AppRouteRecord[] = [
     component: Layout,
     children: [
       { path: 'log', name: 'ErrorLog', component: () => import('@/views/error-log/index.vue'), meta: { title: 'Error Log', icon: 'bug' } }
+    ]
+  } as AppRouteRecord,
+  // Phase 4: components, charts, nested, excel, zip, pdf, guide, documentation, external-link routes restored.
+  componentsRouter,
+  chartsRouter,
+  nestedRouter,
+  {
+    path: '/excel',
+    component: Layout,
+    redirect: '/excel/export-excel',
+    name: 'Excel',
+    meta: { title: 'Excel', icon: 'excel' },
+    children: [
+      { path: 'export-excel', name: 'ExportExcel', component: () => import('@/views/excel/export-excel.vue'), meta: { title: 'Export Excel' } },
+      { path: 'export-selected-excel', name: 'SelectExcel', component: () => import('@/views/excel/select-excel.vue'), meta: { title: 'Export Selected' } },
+      { path: 'export-merge-header', name: 'MergeHeader', component: () => import('@/views/excel/merge-header.vue'), meta: { title: 'Merge Header' } },
+      { path: 'upload-excel', name: 'UploadExcel', component: () => import('@/views/excel/upload-excel.vue'), meta: { title: 'Upload Excel' } }
+    ]
+  } as AppRouteRecord,
+  {
+    path: '/zip',
+    component: Layout,
+    redirect: '/zip/download',
+    name: 'Zip',
+    meta: { title: 'Zip', icon: 'zip' },
+    children: [
+      { path: 'download', name: 'ExportZip', component: () => import('@/views/zip/index.vue'), meta: { title: 'Export Zip' } }
+    ]
+  } as AppRouteRecord,
+  {
+    path: '/pdf',
+    component: Layout,
+    redirect: '/pdf/index',
+    children: [
+      { path: 'index', name: 'PDF', component: () => import('@/views/pdf/index.vue'), meta: { title: 'PDF', icon: 'pdf' } }
+    ]
+  } as AppRouteRecord,
+  {
+    path: '/pdf/download',
+    component: () => import('@/views/pdf/download.vue'),
+    hidden: true
+  } as AppRouteRecord,
+  {
+    path: '/guide',
+    component: Layout,
+    redirect: '/guide/index',
+    children: [
+      { path: 'index', name: 'Guide', component: () => import('@/views/guide/index.vue'), meta: { title: 'Guide', icon: 'guide', noCache: true } }
+    ]
+  } as AppRouteRecord,
+  {
+    path: '/documentation',
+    component: Layout,
+    children: [
+      { path: 'index', name: 'Documentation', component: () => import('@/views/documentation/index.vue'), meta: { title: 'Documentation', icon: 'documentation', affix: true } }
+    ]
+  } as AppRouteRecord,
+  {
+    path: '/external-link',
+    component: Layout,
+    children: [
+      {
+        path: 'https://github.com/PanJiaChen/vue-element-admin',
+        meta: { title: 'External Link', icon: 'link' }
+      }
     ]
   } as AppRouteRecord,
   // 404 must be last

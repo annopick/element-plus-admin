@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
-    <el-input v-model="filename" placeholder="Please enter the file name (default excel-list)" style="width:350px;" prefix-icon="el-icon-document" />
-    <el-button :loading="downloadLoading" style="margin-bottom:20px" type="primary" icon="el-icon-document" @click="handleDownload">
+    <el-input v-model="filename" placeholder="Please enter the file name (default excel-list)" style="width:350px;" :prefix-icon="Document" />
+    <el-button :loading="downloadLoading" style="margin-bottom:20px" type="primary" :icon="Document" @click="handleDownload">
       Export Selected Items
     </el-button>
     <a href="https://panjiachen.github.io/vue-element-admin-site/feature/component/excel.html" target="_blank" style="margin-left:15px;">
@@ -19,28 +19,28 @@
     >
       <el-table-column type="selection" align="center" />
       <el-table-column align="center" label="Id" width="95">
-        <template slot-scope="scope">
+        <template #default="scope">
           {{ scope.$index }}
         </template>
       </el-table-column>
       <el-table-column label="Title">
-        <template slot-scope="scope">
+        <template #default="scope">
           {{ scope.row.title }}
         </template>
       </el-table-column>
       <el-table-column label="Author" width="110" align="center">
-        <template slot-scope="scope">
+        <template #default="scope">
           <el-tag>{{ scope.row.author }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="Readings" width="115" align="center">
-        <template slot-scope="scope">
+        <template #default="scope">
           {{ scope.row.pageviews }}
         </template>
       </el-table-column>
       <el-table-column align="center" label="PDate" width="220">
-        <template slot-scope="scope">
-          <i class="el-icon-time" />
+        <template #default="scope">
+          <el-icon><Timer /></el-icon>
           <span>{{ scope.row.display_time }}</span>
         </template>
       </el-table-column>
@@ -48,60 +48,59 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { ElMessage } from 'element-plus'
+import type { TableInstance } from 'element-plus'
+import { Document, Timer } from '@element-plus/icons-vue'
 import { fetchList } from '@/api/article'
+import { export_json_to_excel } from '@/vendor/Export2Excel'
 
-export default {
-  name: 'SelectExcel',
-  data() {
-    return {
-      list: null,
-      listLoading: true,
-      multipleSelection: [],
-      downloadLoading: false,
-      filename: ''
-    }
-  },
-  created() {
-    this.fetchData()
-  },
-  methods: {
-    fetchData() {
-      this.listLoading = true
-      fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.listLoading = false
-      })
-    },
-    handleSelectionChange(val) {
-      this.multipleSelection = val
-    },
-    handleDownload() {
-      if (this.multipleSelection.length) {
-        this.downloadLoading = true
-        import('@/vendor/Export2Excel').then(excel => {
-          const tHeader = ['Id', 'Title', 'Author', 'Readings', 'Date']
-          const filterVal = ['id', 'title', 'author', 'pageviews', 'display_time']
-          const list = this.multipleSelection
-          const data = this.formatJson(filterVal, list)
-          excel.export_json_to_excel({
-            header: tHeader,
-            data,
-            filename: this.filename
-          })
-          this.$refs.multipleTable.clearSelection()
-          this.downloadLoading = false
-        })
-      } else {
-        this.$message({
-          message: 'Please select at least one item',
-          type: 'warning'
-        })
-      }
-    },
-    formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => v[j]))
-    }
+defineOptions({ name: 'SelectExcel' })
+
+const list = ref<any[]>([])
+const listLoading = ref(true)
+const multipleSelection = ref<any[]>([])
+const downloadLoading = ref(false)
+const filename = ref('')
+const multipleTable = ref<TableInstance>()
+
+function fetchData() {
+  listLoading.value = true
+  fetchList({}).then(response => {
+    list.value = response.data.items
+    listLoading.value = false
+  })
+}
+
+function handleSelectionChange(val: any[]) {
+  multipleSelection.value = val
+}
+
+function formatJson(filterVal: string[], jsonData: any[]) {
+  return jsonData.map(v => filterVal.map(j => v[j]))
+}
+
+function handleDownload() {
+  if (multipleSelection.value.length) {
+    downloadLoading.value = true
+    const tHeader = ['Id', 'Title', 'Author', 'Readings', 'Date']
+    const filterVal = ['id', 'title', 'author', 'pageviews', 'display_time']
+    const data = formatJson(filterVal, multipleSelection.value)
+    export_json_to_excel({
+      header: tHeader,
+      data,
+      filename: filename.value
+    })
+    multipleTable.value?.clearSelection()
+    downloadLoading.value = false
+  } else {
+    ElMessage({
+      message: 'Please select at least one item',
+      type: 'warning'
+    })
   }
 }
+
+onMounted(fetchData)
 </script>

@@ -5,36 +5,30 @@
     <Kanban :key="3" :list="list3" :group="group" class="kanban done" header-text="Done" />
   </div>
 </template>
-<script>
-import Kanban from '@/components/Kanban'
 
-export default {
-  name: 'DragKanbanDemo',
-  components: {
-    Kanban
-  },
-  data() {
-    return {
-      group: 'mission',
-      list1: [
-        { name: 'Mission', id: 1 },
-        { name: 'Mission', id: 2 },
-        { name: 'Mission', id: 3 },
-        { name: 'Mission', id: 4 }
-      ],
-      list2: [
-        { name: 'Mission', id: 5 },
-        { name: 'Mission', id: 6 },
-        { name: 'Mission', id: 7 }
-      ],
-      list3: [
-        { name: 'Mission', id: 8 },
-        { name: 'Mission', id: 9 },
-        { name: 'Mission', id: 10 }
-      ]
-    }
-  }
-}
+<script setup lang="ts">
+import { ref } from 'vue'
+import Kanban from '@/components/Kanban/index.vue'
+
+defineOptions({ name: 'DragKanbanDemo' })
+
+const group = ref('mission')
+const list1 = ref([
+  { name: 'Mission', id: 1 },
+  { name: 'Mission', id: 2 },
+  { name: 'Mission', id: 3 },
+  { name: 'Mission', id: 4 }
+])
+const list2 = ref([
+  { name: 'Mission', id: 5 },
+  { name: 'Mission', id: 6 },
+  { name: 'Mission', id: 7 }
+])
+const list3 = ref([
+  { name: 'Mission', id: 8 },
+  { name: 'Mission', id: 9 },
+  { name: 'Mission', id: 10 }
+])
 </script>
 <style lang="scss">
 .board {
@@ -63,4 +57,3 @@ export default {
   }
 }
 </style>
-

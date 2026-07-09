@@ -1,18 +1,18 @@
 <template>
   <el-table :data="list" style="width: 100%;padding-top: 15px;">
     <el-table-column label="Order_No" min-width="200">
-      <template slot-scope="scope">
-        {{ scope.row.order_no | orderNoFilter }}
+      <template #default="{ row }">
+        {{ row.order_no.substring(0, 30) }}
       </template>
     </el-table-column>
     <el-table-column label="Price" width="195" align="center">
-      <template slot-scope="scope">
-        ¥{{ scope.row.price | toThousandFilter }}
+      <template #default="{ row }">
+        ¥{{ toThousandFilter(row.price) }}
       </template>
     </el-table-column>
     <el-table-column label="Status" width="100" align="center">
-      <template slot-scope="{row}">
-        <el-tag :type="row.status | statusFilter">
+      <template #default="{ row }">
+        <el-tag :type="statusFilter(row.status)">
           {{ row.status }}
         </el-tag>
       </template>
@@ -20,36 +20,30 @@
   </el-table>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref, onBeforeMount } from 'vue'
 import { transactionList } from '@/api/remote-search'
+import { toThousandFilter } from '@/utils/filters'
 
-export default {
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        success: 'success',
-        pending: 'danger'
-      }
-      return statusMap[status]
-    },
-    orderNoFilter(str) {
-      return str.substring(0, 30)
-    }
-  },
-  data() {
-    return {
-      list: null
-    }
-  },
-  created() {
-    this.fetchData()
-  },
-  methods: {
-    fetchData() {
-      transactionList().then(response => {
-        this.list = response.data.items.slice(0, 8)
-      })
-    }
+defineOptions({ name: 'TransactionTable' })
+
+const list = ref<any[]>([])
+
+function statusFilter(status: string): 'success' | 'danger' | 'info' | 'primary' | 'warning' {
+  const statusMap: Record<string, 'success' | 'danger'> = {
+    success: 'success',
+    pending: 'danger'
   }
+  return statusMap[status] || 'info'
+}
+
+onBeforeMount(() => {
+  fetchData()
+})
+
+function fetchData() {
+  transactionList({}).then((response: any) => {
+    list.value = response.data.items.slice(0, 8)
+  })
 }
 </script>

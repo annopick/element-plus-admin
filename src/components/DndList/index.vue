@@ -1,106 +1,105 @@
 <template>
   <div class="dndList">
-    <div :style="{width:width1}" class="dndList-list">
+    <div :style="{ width: width1 }" class="dndList-list">
       <h3>{{ list1Title }}</h3>
-      <draggable :set-data="setData" :list="list1" group="article" class="dragArea">
-        <div v-for="element in list1" :key="element.id" class="list-complete-item">
-          <div class="list-complete-item-handle">
-            {{ element.id }}[{{ element.author }}] {{ element.title }}
+      <draggable :set-data="setData" :list="list1" group="article" item-key="id" class="dragArea">
+        <template #item="{ element }">
+          <div class="list-complete-item">
+            <div class="list-complete-item-handle">
+              {{ element.id }}[{{ element.author }}] {{ element.title }}
+            </div>
+            <div style="position:absolute;right:0px;">
+              <span style="float: right ;margin-top: -20px;margin-right:5px;" @click="deleteEle(element)">
+                <el-icon style="color:#ff4949"><Delete /></el-icon>
+              </span>
+            </div>
           </div>
-          <div style="position:absolute;right:0px;">
-            <span style="float: right ;margin-top: -20px;margin-right:5px;" @click="deleteEle(element)">
-              <i style="color:#ff4949" class="el-icon-delete" />
-            </span>
-          </div>
-        </div>
+        </template>
       </draggable>
     </div>
-    <div :style="{width:width2}" class="dndList-list">
+    <div :style="{ width: width2 }" class="dndList-list">
       <h3>{{ list2Title }}</h3>
-      <draggable :list="list2" group="article" class="dragArea">
-        <div v-for="element in list2" :key="element.id" class="list-complete-item">
-          <div class="list-complete-item-handle2" @click="pushEle(element)">
-            {{ element.id }} [{{ element.author }}] {{ element.title }}
+      <draggable :list="list2" group="article" item-key="id" class="dragArea">
+        <template #item="{ element }">
+          <div class="list-complete-item">
+            <div class="list-complete-item-handle2" @click="pushEle(element)">
+              {{ element.id }} [{{ element.author }}] {{ element.title }}
+            </div>
           </div>
-        </div>
+        </template>
       </draggable>
     </div>
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import draggable from 'vuedraggable'
+import { Delete } from '@element-plus/icons-vue'
 
-export default {
-  name: 'DndList',
-  components: { draggable },
-  props: {
-    list1: {
-      type: Array,
-      default() {
-        return []
-      }
-    },
-    list2: {
-      type: Array,
-      default() {
-        return []
-      }
-    },
-    list1Title: {
-      type: String,
-      default: 'list1'
-    },
-    list2Title: {
-      type: String,
-      default: 'list2'
-    },
-    width1: {
-      type: String,
-      default: '48%'
-    },
-    width2: {
-      type: String,
-      default: '48%'
-    }
-  },
-  methods: {
-    isNotInList1(v) {
-      return this.list1.every(k => v.id !== k.id)
-    },
-    isNotInList2(v) {
-      return this.list2.every(k => v.id !== k.id)
-    },
-    deleteEle(ele) {
-      for (const item of this.list1) {
-        if (item.id === ele.id) {
-          const index = this.list1.indexOf(item)
-          this.list1.splice(index, 1)
-          break
-        }
-      }
-      if (this.isNotInList2(ele)) {
-        this.list2.unshift(ele)
-      }
-    },
-    pushEle(ele) {
-      for (const item of this.list2) {
-        if (item.id === ele.id) {
-          const index = this.list2.indexOf(item)
-          this.list2.splice(index, 1)
-          break
-        }
-      }
-      if (this.isNotInList1(ele)) {
-        this.list1.push(ele)
-      }
-    },
-    setData(dataTransfer) {
-      // to avoid Firefox bug
-      // Detail see : https://github.com/RubaXa/Sortable/issues/1012
-      dataTransfer.setData('Text', '')
+defineOptions({ name: 'DndList' })
+
+interface ListItem {
+  id: number
+  author?: string
+  title?: string
+  name?: string
+  [key: string]: any
+}
+
+const props = withDefaults(defineProps<{
+  list1?: ListItem[]
+  list2?: ListItem[]
+  list1Title?: string
+  list2Title?: string
+  width1?: string
+  width2?: string
+}>(), {
+  list1: () => [],
+  list2: () => [],
+  list1Title: 'list1',
+  list2Title: 'list2',
+  width1: '48%',
+  width2: '48%'
+})
+
+function isNotInList1(v: ListItem) {
+  return props.list1.every(k => v.id !== k.id)
+}
+
+function isNotInList2(v: ListItem) {
+  return props.list2.every(k => v.id !== k.id)
+}
+
+function deleteEle(ele: ListItem) {
+  for (const item of props.list1) {
+    if (item.id === ele.id) {
+      const index = props.list1.indexOf(item)
+      props.list1.splice(index, 1)
+      break
     }
   }
+  if (isNotInList2(ele)) {
+    props.list2.unshift(ele)
+  }
+}
+
+function pushEle(ele: ListItem) {
+  for (const item of props.list2) {
+    if (item.id === ele.id) {
+      const index = props.list2.indexOf(item)
+      props.list2.splice(index, 1)
+      break
+    }
+  }
+  if (isNotInList1(ele)) {
+    props.list1.push(ele)
+  }
+}
+
+function setData(dataTransfer: DataTransfer) {
+  // to avoid Firefox bug
+  // Detail see : https://github.com/RubaXa/Sortable/issues/1012
+  dataTransfer.setData('Text', '')
 }
 </script>
 

@@ -10,30 +10,28 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    items: {
-      type: Array,
-      default: function() {
-        return []
-      }
-    },
-    title: {
-      type: String,
-      default: 'vue'
-    }
-  },
-  data() {
-    return {
-      isActive: false
-    }
-  },
-  methods: {
-    clickTitle() {
-      this.isActive = !this.isActive
-    }
-  }
+<script setup lang="ts">
+import { ref } from 'vue'
+
+defineOptions({ name: 'DropdownMenu' })
+
+interface Item {
+  title: string
+  href?: string
+}
+
+withDefaults(defineProps<{
+  items?: Item[]
+  title?: string
+}>(), {
+  items: () => [],
+  title: 'vue'
+})
+
+const isActive = ref(false)
+
+function clickTitle() {
+  isActive.value = !isActive.value
 }
 </script>
 

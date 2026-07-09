@@ -1,7 +1,7 @@
 <template>
   <div style="display:inline-block;">
     <label class="radio-label">Cell Auto-Width: </label>
-    <el-radio-group v-model="autoWidth">
+    <el-radio-group :model-value="modelValue" @update:model-value="update">
       <el-radio :label="true" border>
         True
       </el-radio>
@@ -12,23 +12,18 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: {
-    value: {
-      type: Boolean,
-      default: true
-    }
-  },
-  computed: {
-    autoWidth: {
-      get() {
-        return this.value
-      },
-      set(val) {
-        this.$emit('input', val)
-      }
-    }
-  }
+<script setup lang="ts">
+defineOptions({ name: 'AutoWidthOption' })
+
+defineProps<{
+  modelValue: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: boolean): void
+}>()
+
+function update(value: string | number | boolean | undefined) {
+  emit('update:modelValue', !!value)
 }
 </script>

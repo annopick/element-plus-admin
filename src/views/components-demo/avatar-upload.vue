@@ -7,12 +7,12 @@
 
     <pan-thumb :image="image" />
 
-    <el-button type="primary" icon="el-icon-upload" style="position: absolute;bottom: 15px;margin-left: 40px;" @click="imagecropperShow=true">
+    <el-button type="primary" :icon="Upload" style="position: absolute;bottom: 15px;margin-left: 40px;" @click="imagecropperShow=true">
       Change Avatar
     </el-button>
 
     <image-cropper
-      v-show="imagecropperShow"
+      v-model="imagecropperShow"
       :key="imagecropperKey"
       :width="300"
       :height="300"
@@ -24,30 +24,26 @@
   </div>
 </template>
 
-<script>
-import ImageCropper from '@/components/ImageCropper'
-import PanThumb from '@/components/PanThumb'
+<script setup lang="ts">
+import { ref } from 'vue'
+import { Upload } from '@element-plus/icons-vue'
+import ImageCropper from '@/components/ImageCropper/index.vue'
+import PanThumb from '@/components/PanThumb/index.vue'
 
-export default {
-  name: 'AvatarUploadDemo',
-  components: { ImageCropper, PanThumb },
-  data() {
-    return {
-      imagecropperShow: false,
-      imagecropperKey: 0,
-      image: 'https://wpimg.wallstcn.com/577965b9-bb9e-4e02-9f0c-095b41417191'
-    }
-  },
-  methods: {
-    cropSuccess(resData) {
-      this.imagecropperShow = false
-      this.imagecropperKey = this.imagecropperKey + 1
-      this.image = resData.files.avatar
-    },
-    close() {
-      this.imagecropperShow = false
-    }
-  }
+defineOptions({ name: 'AvatarUploadDemo' })
+
+const imagecropperShow = ref(false)
+const imagecropperKey = ref(0)
+const image = ref('https://wpimg.wallstcn.com/577965b9-bb9e-4e02-9f0c-095b41417191')
+
+function cropSuccess(resData: any) {
+  imagecropperShow.value = false
+  imagecropperKey.value = imagecropperKey.value + 1
+  image.value = resData.files.avatar
+}
+
+function close() {
+  imagecropperShow.value = false
 }
 </script>
 
@@ -58,4 +54,3 @@ export default {
     border-radius: 50%;
   }
 </style>
-

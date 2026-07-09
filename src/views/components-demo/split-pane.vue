@@ -3,41 +3,34 @@
     <aside><strong>SplitPane</strong> If you've used
       <a href="https://codepen.io/" target="_blank"> codepen</a>,
       <a href="https://jsfiddle.net/" target="_blank"> jsfiddle </a>will not be unfamiliar.
-      <a href="https://github.com/PanJiaChen/vue-split-pane" target="_blank"> Github repository</a>
+      <a href="https://github.com/antoniandre/splitpanes" target="_blank"> Github repository</a>
     </aside>
-    <split-pane split="vertical" @resize="resize">
-      <template slot="paneL">
+    <splitpanes vertical @resize="resize">
+      <pane min-size="20">
         <div class="left-container" />
-      </template>
-      <template slot="paneR">
-        <split-pane split="horizontal">
-          <template slot="paneL">
-            <div class="top-container" />
-          </template>
-          <template slot="paneR">
-            <div class="bottom-container" />
-          </template>
-        </split-pane>
-      </template>
-    </split-pane>
+      </pane>
+      <pane min-size="20">
+        <splitpanes horizontal>
+          <pane><div class="top-container" /></pane>
+          <pane><div class="bottom-container" /></pane>
+        </splitpanes>
+      </pane>
+    </splitpanes>
   </div>
 </template>
 
-<script>
-import splitPane from 'vue-splitpane'
+<script setup lang="ts">
+import { Splitpanes, Pane } from 'splitpanes'
+import 'splitpanes/dist/splitpanes.css'
 
-export default {
-  name: 'SplitpaneDemo',
-  components: { splitPane },
-  methods: {
-    resize() {
-      console.log('resize')
-    }
-  }
+defineOptions({ name: 'SplitpaneDemo' })
+
+function resize() {
+  console.log('resize')
 }
 </script>
 
-<style  scoped>
+<style scoped>
   .components-container {
     position: relative;
     height: 100vh;

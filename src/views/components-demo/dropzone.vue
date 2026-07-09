@@ -5,27 +5,13 @@
       Because my business has special needs, and has to upload images to qiniu, so instead of a third party, I chose encapsulate it by myself. It is very simple, you can see the detail code in @/components/Dropzone.
     </aside>
     <div class="editor-container">
-      <dropzone id="myVueDropzone" url="https://httpbin.org/post" @dropzone-removedFile="dropzoneR" @dropzone-success="dropzoneS" />
+      <dropzone />
     </div>
   </div>
 </template>
 
-<script>
-import Dropzone from '@/components/Dropzone'
+<script setup lang="ts">
+import Dropzone from '@/components/Dropzone/index.vue'
 
-export default {
-  name: 'DropzoneDemo',
-  components: { Dropzone },
-  methods: {
-    dropzoneS(file) {
-      console.log(file)
-      this.$message({ message: 'Upload success', type: 'success' })
-    },
-    dropzoneR(file) {
-      console.log(file)
-      this.$message({ message: 'Delete success', type: 'success' })
-    }
-  }
-}
+defineOptions({ name: 'DropzoneDemo' })
 </script>
-

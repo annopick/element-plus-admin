@@ -1,23 +1,19 @@
 <template>
   <div class="chart-container">
-    <chart height="100%" width="100%" />
+    <line-marker height="100%" width="100%" />
   </div>
 </template>
 
-<script>
-import Chart from '@/components/Charts/LineMarker'
+<script setup lang="ts">
+import LineMarker from '@/components/Charts/LineMarker.vue'
 
-export default {
-  name: 'LineChart',
-  components: { Chart }
-}
+defineOptions({ name: 'LineChart' })
 </script>
 
 <style scoped>
-.chart-container{
+.chart-container {
   position: relative;
   width: 100%;
   height: calc(100vh - 84px);
 }
 </style>
-

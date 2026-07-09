@@ -6,19 +6,16 @@
   </a>
 </template>
 
-<script>
-export default {
-  props: {
-    className: {
-      type: String,
-      default: ''
-    },
-    text: {
-      type: String,
-      default: 'vue-element-admin'
-    }
-  }
-}
+<script setup lang="ts">
+defineOptions({ name: 'Mallki' })
+
+withDefaults(defineProps<{
+  className?: string
+  text?: string
+}>(), {
+  className: '',
+  text: 'vue-element-admin'
+})
 </script>
 
 <style>
