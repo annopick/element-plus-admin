@@ -28,41 +28,24 @@
   </div>
 </template>
 
-<script>
-import { mapGetters } from 'vuex'
-import UserCard from './components/UserCard'
-import Activity from './components/Activity'
-import Timeline from './components/Timeline'
-import Account from './components/Account'
+<script setup lang="ts">
+import { ref } from 'vue'
+import { useUserStore } from '@/store/modules/user'
+import UserCard from './components/UserCard.vue'
+import Activity from './components/Activity.vue'
+import Timeline from './components/Timeline.vue'
+import Account from './components/Account.vue'
 
-export default {
-  name: 'Profile',
-  components: { UserCard, Activity, Timeline, Account },
-  data() {
-    return {
-      user: {},
-      activeTab: 'activity'
-    }
-  },
-  computed: {
-    ...mapGetters([
-      'name',
-      'avatar',
-      'roles'
-    ])
-  },
-  created() {
-    this.getUser()
-  },
-  methods: {
-    getUser() {
-      this.user = {
-        name: this.name,
-        role: this.roles.join(' | '),
-        email: 'admin@test.com',
-        avatar: this.avatar
-      }
-    }
-  }
-}
+defineOptions({ name: 'Profile' })
+
+const userStore = useUserStore()
+
+const activeTab = ref('activity')
+
+const user = ref({
+  name: userStore.name,
+  role: userStore.roles.join(' | '),
+  email: 'admin@test.com',
+  avatar: userStore.avatar
+})
 </script>
