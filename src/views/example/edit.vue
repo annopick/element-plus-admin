@@ -2,12 +2,8 @@
   <article-detail :is-edit="true" />
 </template>
 
-<script>
-import ArticleDetail from './components/ArticleDetail'
+<script setup lang="ts">
+import ArticleDetail from './components/ArticleDetail.vue'
 
-export default {
-  name: 'EditForm',
-  components: { ArticleDetail }
-}
+defineOptions({ name: 'EditForm' })
 </script>
-

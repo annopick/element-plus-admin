@@ -2,45 +2,48 @@
   <el-dropdown :hide-on-click="false" :show-timeout="100" trigger="click">
     <el-button plain>
       Platfroms({{ platforms.length }})
-      <i class="el-icon-caret-bottom el-icon--right" />
+      <el-icon class="el-icon--right"><ArrowDown /></el-icon>
     </el-button>
-    <el-dropdown-menu slot="dropdown" class="no-border">
-      <el-checkbox-group v-model="platforms" style="padding: 5px 15px;">
-        <el-checkbox v-for="item in platformsOptions" :key="item.key" :label="item.key">
-          {{ item.name }}
-        </el-checkbox>
-      </el-checkbox-group>
-    </el-dropdown-menu>
+    <template #dropdown>
+      <el-dropdown-menu class="no-border">
+        <el-checkbox-group v-model="platforms" style="padding: 5px 15px;">
+          <el-checkbox v-for="item in platformsOptions" :key="item.key" :value="item.key">
+            {{ item.name }}
+          </el-checkbox>
+        </el-checkbox-group>
+      </el-dropdown-menu>
+    </template>
   </el-dropdown>
 </template>
 
-<script>
-export default {
-  props: {
-    value: {
-      required: true,
-      default: () => [],
-      type: Array
-    }
+<script setup lang="ts">
+import { computed } from 'vue'
+import { ArrowDown } from '@element-plus/icons-vue'
+
+defineOptions({ name: 'PlatformDropdown' })
+
+const props = withDefaults(defineProps<{
+  modelValue?: string[]
+}>(), {
+  modelValue: () => [] as string[]
+})
+
+const emit = defineEmits<{
+  (e: 'update:modelValue', val: string[]): void
+}>()
+
+const platformsOptions = [
+  { key: 'a-platform', name: 'a-platform' },
+  { key: 'b-platform', name: 'b-platform' },
+  { key: 'c-platform', name: 'c-platform' }
+]
+
+const platforms = computed<string[]>({
+  get() {
+    return props.modelValue
   },
-  data() {
-    return {
-      platformsOptions: [
-        { key: 'a-platform', name: 'a-platform' },
-        { key: 'b-platform', name: 'b-platform' },
-        { key: 'c-platform', name: 'c-platform' }
-      ]
-    }
-  },
-  computed: {
-    platforms: {
-      get() {
-        return this.value
-      },
-      set(val) {
-        this.$emit('input', val)
-      }
-    }
+  set(val) {
+    emit('update:modelValue', val)
   }
-}
+})
 </script>

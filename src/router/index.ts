@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
 import Layout from '@/layout/index.vue'
+import tableRouter from './modules/table'
 
 // vue-router 4's `RouteRecordRaw` is a discriminated union (single-view | multiple-views | redirect),
 // so an interface cannot extend it. Use a type intersection instead to preserve the recursive
@@ -98,7 +99,7 @@ export const constantRoutes: AppRouteRecord[] = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes: AppRouteRecord[] = [
-  // Phase 1: only restore permission routes (needed for core loop). Other modules restored in Phase 2-4.
+  // Phase 2: permission, table, and example routes restored. Other modules restored in Phase 3-4.
   {
     path: '/permission',
     component: Layout,
@@ -127,7 +128,20 @@ export const asyncRoutes: AppRouteRecord[] = [
       }
     ]
   } as AppRouteRecord,
-  // TODO Phase 2-4: restore icon, components, charts, nested, table, example, tab, error, excel, zip, pdf, theme, clipboard, external-link routes
+  tableRouter,
+  {
+    path: '/example',
+    component: Layout,
+    redirect: '/example/list',
+    name: 'Example',
+    meta: { title: 'Example', icon: 'edit' },
+    children: [
+      { path: 'create', name: 'CreateArticle', component: () => import('@/views/example/create.vue'), meta: { title: 'Create Article', icon: 'edit' } },
+      { path: 'edit/:id(\\d+)', name: 'EditArticle', component: () => import('@/views/example/edit.vue'), meta: { title: 'Edit Article', noCache: true, activeMenu: '/example/list' }, hidden: true } as AppRouteRecord,
+      { path: 'list', name: 'ArticleList', component: () => import('@/views/example/list.vue'), meta: { title: 'Article List', icon: 'list' } }
+    ]
+  } as AppRouteRecord,
+  // TODO Phase 3-4: restore icon, components, charts, nested, tab, error, excel, zip, pdf, theme, clipboard, external-link routes
   // 404 must be last
   { path: '/:pathMatch(.*)*', redirect: '/404', hidden: true } as AppRouteRecord
 ]

@@ -2,37 +2,44 @@
   <el-dropdown :show-timeout="100" trigger="click">
     <el-button plain>
       Link
-      <i class="el-icon-caret-bottom el-icon--right" />
+      <el-icon class="el-icon--right"><ArrowDown /></el-icon>
     </el-button>
-    <el-dropdown-menu slot="dropdown" class="no-padding no-border" style="width:400px">
-      <el-form-item label-width="0px" style="margin-bottom: 0px" prop="source_uri">
-        <el-input v-model="source_uri" placeholder="Please enter the content">
-          <template slot="prepend">
-            URL
-          </template>
-        </el-input>
-      </el-form-item>
-    </el-dropdown-menu>
+    <template #dropdown>
+      <el-dropdown-menu class="no-padding no-border" style="width:400px">
+        <el-form-item label-width="0px" style="margin-bottom: 0px" prop="source_uri">
+          <el-input v-model="source_uri" placeholder="Please enter the content">
+            <template #prepend>
+              URL
+            </template>
+          </el-input>
+        </el-form-item>
+      </el-dropdown-menu>
+    </template>
   </el-dropdown>
 </template>
 
-<script>
-export default {
-  props: {
-    value: {
-      type: String,
-      default: ''
-    }
+<script setup lang="ts">
+import { computed } from 'vue'
+import { ArrowDown } from '@element-plus/icons-vue'
+
+defineOptions({ name: 'SourceUrlDropdown' })
+
+const props = withDefaults(defineProps<{
+  modelValue?: string
+}>(), {
+  modelValue: ''
+})
+
+const emit = defineEmits<{
+  (e: 'update:modelValue', val: string): void
+}>()
+
+const source_uri = computed<string>({
+  get() {
+    return props.modelValue
   },
-  computed: {
-    source_uri: {
-      get() {
-        return this.value
-      },
-      set(val) {
-        this.$emit('input', val)
-      }
-    }
+  set(val) {
+    emit('update:modelValue', val)
   }
-}
+})
 </script>

@@ -2,12 +2,8 @@
   <article-detail :is-edit="false" />
 </template>
 
-<script>
-import ArticleDetail from './components/ArticleDetail'
+<script setup lang="ts">
+import ArticleDetail from './components/ArticleDetail.vue'
 
-export default {
-  name: 'CreateArticle',
-  components: { ArticleDetail }
-}
+defineOptions({ name: 'CreateArticle' })
 </script>
-
