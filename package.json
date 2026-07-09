@@ -16,6 +16,7 @@
     "report:e2e": "playwright show-report"
   },
   "dependencies": {
+    "@codemirror/theme-one-dark": "^6.1.3",
     "axios": "^1.7.0",
     "clipboard": "^2.0.11",
     "codemirror": "^6.0.2",
