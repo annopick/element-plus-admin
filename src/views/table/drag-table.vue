@@ -116,7 +116,15 @@ async function getList() {
 }
 
 function setSort() {
-  const el = dragTableRef.value?.$el.querySelectorAll('.el-table__body-wrapper > table > tbody')[0] as HTMLElement
+  // Element Plus 3 wraps the table body in an el-scrollbar, so the tbody is
+  // not a direct child of .el-table__body-wrapper. It is also rendered
+  // asynchronously, so we retry until it is available.
+  const el = dragTableRef.value?.$el.querySelector('.el-table__body-wrapper tbody') as HTMLElement | null
+  if (!el) {
+    // Retry on the next frame — el-scrollbar hasn't rendered the tbody yet.
+    requestAnimationFrame(setSort)
+    return
+  }
   const options: Sortable.SortableOptions = {
     ghostClass: 'sortable-ghost', // Class name for the drop placeholder,
     setData: function(dataTransfer: DataTransfer) {
