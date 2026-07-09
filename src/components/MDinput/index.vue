@@ -1,6 +1,6 @@
 <template>
   <div :class="computedClasses" class="material-input__component">
-    <div :class="{iconClass:icon}">
+    <div :class="{ iconClass: icon }">
       <i v-if="icon" :class="['el-icon-' + icon]" class="el-input__icon material-input__icon" />
       <input
         v-if="type === 'email'"
@@ -109,90 +109,93 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 // source:https://github.com/wemake-services/vue-material-input/blob/master/src/components/MaterialInput.vue
+import { computed, ref, watch } from 'vue'
+import { useFormItem } from 'element-plus'
 
-export default {
-  name: 'MdInput',
-  props: {
-    /* eslint-disable */
-    icon: String,
-    name: String,
-    type: {
-      type: String,
-      default: 'text'
-    },
-    value: [String, Number],
-    placeholder: String,
-    readonly: Boolean,
-    disabled: Boolean,
-    min: String,
-    max: String,
-    step: String,
-    minlength: Number,
-    maxlength: Number,
-    required: {
-      type: Boolean,
-      default: true
-    },
-    autoComplete: {
-      type: String,
-      default: 'off'
-    },
-    validateEvent: {
-      type: Boolean,
-      default: true
-    }
-  },
-  data() {
-    return {
-      currentValue: this.value,
-      focus: false,
-      fillPlaceHolder: null
-    }
-  },
-  computed: {
-    computedClasses() {
-      return {
-        'material--active': this.focus,
-        'material--disabled': this.disabled,
-        'material--raised': Boolean(this.focus || this.currentValue) // has value
-      }
-    }
-  },
-  watch: {
-    value(newValue) {
-      this.currentValue = newValue
-    }
-  },
-  methods: {
-    handleModelInput(event) {
-      const value = event.target.value
-      this.$emit('input', value)
-      if (this.$parent.$options.componentName === 'ElFormItem') {
-        if (this.validateEvent) {
-          this.$parent.$emit('el.form.change', [value])
-        }
-      }
-      this.$emit('change', value)
-    },
-    handleMdFocus(event) {
-      this.focus = true
-      this.$emit('focus', event)
-      if (this.placeholder && this.placeholder !== '') {
-        this.fillPlaceHolder = this.placeholder
-      }
-    },
-    handleMdBlur(event) {
-      this.focus = false
-      this.$emit('blur', event)
-      this.fillPlaceHolder = null
-      if (this.$parent.$options.componentName === 'ElFormItem') {
-        if (this.validateEvent) {
-          this.$parent.$emit('el.form.blur', [this.currentValue])
-        }
-      }
-    }
+defineOptions({ name: 'MdInput' })
+
+const props = withDefaults(defineProps<{
+  icon?: string
+  name?: string
+  type?: string
+  modelValue?: string | number
+  placeholder?: string
+  readonly?: boolean
+  disabled?: boolean
+  min?: string
+  max?: string
+  step?: string
+  minlength?: number
+  maxlength?: number
+  required?: boolean
+  autoComplete?: string
+  validateEvent?: boolean
+}>(), {
+  icon: '',
+  name: '',
+  type: 'text',
+  modelValue: '',
+  placeholder: '',
+  readonly: false,
+  disabled: false,
+  min: undefined,
+  max: undefined,
+  step: undefined,
+  minlength: undefined,
+  maxlength: undefined,
+  required: true,
+  autoComplete: 'off',
+  validateEvent: true
+})
+
+const emit = defineEmits<{
+  (e: 'update:modelValue', val: string): void
+  (e: 'change', val: string): void
+  (e: 'focus', evt: FocusEvent): void
+  (e: 'blur', evt: FocusEvent): void
+}>()
+
+const { formItem } = useFormItem()
+
+const currentValue = ref<string | number>(props.modelValue)
+const focus = ref(false)
+const fillPlaceHolder = ref<string>('')
+
+watch(() => props.modelValue, (newValue) => {
+  currentValue.value = newValue
+})
+
+const computedClasses = computed(() => ({
+  'material--active': focus.value,
+  'material--disabled': props.disabled,
+  'material--raised': Boolean(focus.value || currentValue.value) // has value
+}))
+
+function handleModelInput(event: Event) {
+  const value = (event.target as HTMLInputElement).value
+  emit('update:modelValue', value)
+  if (props.validateEvent) {
+    formItem?.validate?.('change').catch(() => undefined)
+  }
+  emit('change', value)
+}
+
+function handleMdFocus(event: FocusEvent) {
+  focus.value = true
+  emit('focus', event)
+  if (props.placeholder && props.placeholder !== '') {
+    fillPlaceHolder.value = props.placeholder
+  }
+}
+
+function handleMdBlur(event: FocusEvent) {
+  focus.value = false
+  emit('blur', event)
+  fillPlaceHolder.value = ''
+  if (props.validateEvent) {
+    formItem?.validate?.('blur').catch(() => undefined)
   }
 }
 </script>
