@@ -28,7 +28,7 @@
 
       <el-table-column width="100px" label="Importance">
         <template #default="{ row }">
-          <svg-icon v-for="n in +row.importance" :key="n" icon-class="star" class="icon-star" />
+          <svg-icon v-for="n in Number(row.importance) || 0" :key="n" icon-class="star" class="icon-star" />
         </template>
       </el-table-column>
 

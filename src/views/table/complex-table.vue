@@ -63,7 +63,7 @@
       </el-table-column>
       <el-table-column label="Imp" width="80px">
         <template #default="{ row }">
-          <svg-icon v-for="n in +row.importance" :key="n" icon-class="star" class="meta-item__icon" />
+          <svg-icon v-for="n in Number(row.importance) || 0" :key="n" icon-class="star" class="meta-item__icon" />
         </template>
       </el-table-column>
       <el-table-column label="Readings" align="center" width="95">
