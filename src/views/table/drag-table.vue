@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <!-- Note that row-key is necessary to get a correct row order. -->
-    <el-table ref="dragTable" v-loading="listLoading" :data="list" row-key="id" border fit highlight-current-row style="width: 100%">
+    <el-table ref="dragTableRef" v-loading="listLoading" :data="list" row-key="id" border fit highlight-current-row style="width: 100%">
       <el-table-column align="center" label="ID" width="65">
         <template #default="{ row }">
           <span>{{ row.id }}</span>
@@ -115,16 +115,19 @@ async function getList() {
   })
 }
 
+let setSortRetries = 0
 function setSort() {
   // Element Plus 3 wraps the table body in an el-scrollbar, so the tbody is
   // not a direct child of .el-table__body-wrapper. It is also rendered
   // asynchronously, so we retry until it is available.
   const el = dragTableRef.value?.$el.querySelector('.el-table__body-wrapper tbody') as HTMLElement | null
-  if (!el) {
+  if (!el || el.children.length === 0) {
     // Retry on the next frame — el-scrollbar hasn't rendered the tbody yet.
-    requestAnimationFrame(setSort)
+    // Guard against an infinite loop if the selector never resolves.
+    if (setSortRetries++ < 50) requestAnimationFrame(setSort)
     return
   }
+  setSortRetries = 0
   const options: Sortable.SortableOptions = {
     ghostClass: 'sortable-ghost', // Class name for the drop placeholder,
     setData: function(dataTransfer: DataTransfer) {

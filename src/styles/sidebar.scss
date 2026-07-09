@@ -151,28 +151,12 @@
       }
     }
 
-    .el-menu--collapse {
-      .el-sub-menu {
-        &>.el-sub-menu__title {
-          &>span {
-            height: 0;
-            width: 0;
-            overflow: hidden;
-            visibility: hidden;
-            display: inline-block;
-          }
-        }
-      }
-      .el-menu-item {
-        &>span {
-          height: 0;
-          width: 0;
-          overflow: hidden;
-          visibility: hidden;
-          display: inline-block;
-        }
-      }
-    }
+    // Element Plus's built-in .el-menu--collapse mode natively hides the menu
+    // item text and renders only the icons (wrapped in el-tooltip triggers).
+    // The previous `>span { visibility: hidden }` rules were too broad: they
+    // hid the icon wrapper spans as well, making collapsed icons disappear.
+    // Rely on Element Plus's native collapse text-hiding instead. Icon
+    // centering is handled by the .el-menu--collapse rules above.
   }
 
   .el-menu--collapse .el-menu .el-sub-menu {
