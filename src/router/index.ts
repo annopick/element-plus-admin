@@ -91,7 +91,7 @@ export const constantRoutes: AppRouteRecord[] = [
       }
     ]
   } as AppRouteRecord
-  // TODO Phase 2-4: restore /documentation, /guide, /profile routes when views are migrated
+  // TODO Phase 4: restore /documentation, /guide routes when views are migrated
 ]
 
 /**
@@ -99,7 +99,8 @@ export const constantRoutes: AppRouteRecord[] = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes: AppRouteRecord[] = [
-  // Phase 2: permission, table, and example routes restored. Other modules restored in Phase 3-4.
+  // Phase 2: permission, table, example routes restored.
+  // Phase 3: profile, theme, clipboard, tab, icons, error-log routes restored.
   {
     path: '/permission',
     component: Layout,
@@ -141,7 +142,52 @@ export const asyncRoutes: AppRouteRecord[] = [
       { path: 'list', name: 'ArticleList', component: () => import('@/views/example/list.vue'), meta: { title: 'Article List', icon: 'list' } }
     ]
   } as AppRouteRecord,
-  // TODO Phase 3-4: restore icon, components, charts, nested, tab, error, excel, zip, pdf, theme, clipboard, external-link routes
+  // Phase 3: profile, theme, clipboard, tab, icons, error-log routes restored.
+  // TODO Phase 4: restore components, charts, nested, error, excel, zip, pdf, external-link routes
+  {
+    path: '/profile',
+    component: Layout,
+    redirect: '/profile/index',
+    hidden: true,
+    children: [
+      { path: 'index', name: 'Profile', component: () => import('@/views/profile/index.vue'), meta: { title: 'Profile', icon: 'user', noCache: true } }
+    ]
+  } as AppRouteRecord,
+  {
+    path: '/theme',
+    component: Layout,
+    children: [
+      { path: 'index', name: 'Theme', component: () => import('@/views/theme/index.vue'), meta: { title: 'Theme', icon: 'theme' } }
+    ]
+  } as AppRouteRecord,
+  {
+    path: '/clipboard',
+    component: Layout,
+    children: [
+      { path: 'index', name: 'ClipboardDemo', component: () => import('@/views/clipboard/index.vue'), meta: { title: 'Clipboard', icon: 'clipboard' } }
+    ]
+  } as AppRouteRecord,
+  {
+    path: '/tab',
+    component: Layout,
+    children: [
+      { path: 'index', name: 'Tab', component: () => import('@/views/tab/index.vue'), meta: { title: 'Tab', icon: 'tab' } }
+    ]
+  } as AppRouteRecord,
+  {
+    path: '/icons',
+    component: Layout,
+    children: [
+      { path: 'index', name: 'Icons', component: () => import('@/views/icons/index.vue'), meta: { title: 'Icons', icon: 'icon', noCache: true } }
+    ]
+  } as AppRouteRecord,
+  {
+    path: '/error-log',
+    component: Layout,
+    children: [
+      { path: 'log', name: 'ErrorLog', component: () => import('@/views/error-log/index.vue'), meta: { title: 'Error Log', icon: 'bug' } }
+    ]
+  } as AppRouteRecord,
   // 404 must be last
   { path: '/:pathMatch(.*)*', redirect: '/404', hidden: true } as AppRouteRecord
 ]
