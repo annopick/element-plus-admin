@@ -53,7 +53,7 @@
           <div style="height:100px;">
             <el-form :model="demo" :rules="demoRules">
               <el-form-item prop="title">
-                <md-input v-model="demo.title" icon="el-icon-search" name="title" placeholder="输入标题">
+                <md-input v-model="demo.title" icon="Search" name="title" placeholder="输入标题">
                   标题
                 </md-input>
               </el-form-item>
