@@ -7,11 +7,11 @@
     <el-tabs type="border-card">
       <el-tab-pane label="Icons">
         <div class="grid">
-          <div v-for="item of svgIcons" :key="item" @click="handleClipboard(generateIconCode(item),$event)">
+          <div v-for="item of svgIcons" :key="item" @click="handleClipboard(generateIconCode(item), $event)">
             <el-tooltip placement="top">
-              <div slot="content">
+              <template #content>
                 {{ generateIconCode(item) }}
-              </div>
+              </template>
               <div class="icon-item">
                 <svg-icon :icon-class="item" class-name="disabled" />
                 <span>{{ item }}</span>
@@ -20,15 +20,17 @@
           </div>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="Element-UI Icons">
+      <el-tab-pane label="Element-Plus Icons">
         <div class="grid">
-          <div v-for="item of elementIcons" :key="item" @click="handleClipboard(generateElementIconCode(item),$event)">
+          <div v-for="item of elementIcons" :key="item" @click="handleClipboard(generateElementIconCode(item), $event)">
             <el-tooltip placement="top">
-              <div slot="content">
+              <template #content>
                 {{ generateElementIconCode(item) }}
-              </div>
+              </template>
               <div class="icon-item">
-                <i :class="'el-icon-' + item" />
+                <el-icon>
+                  <component :is="item" />
+                </el-icon>
                 <span>{{ item }}</span>
               </div>
             </el-tooltip>
@@ -39,30 +41,31 @@
   </div>
 </template>
 
-<script>
-import clipboard from '@/utils/clipboard'
-import svgIcons from './svg-icons'
-import elementIcons from './element-icons'
+<script setup lang="ts">
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import clip from '@/utils/clipboard'
 
-export default {
-  name: 'Icons',
-  data() {
-    return {
-      svgIcons,
-      elementIcons
-    }
-  },
-  methods: {
-    generateIconCode(symbol) {
-      return `<svg-icon icon-class="${symbol}" />`
-    },
-    generateElementIconCode(symbol) {
-      return `<i class="el-icon-${symbol}" />`
-    },
-    handleClipboard(text, event) {
-      clipboard(text, event)
-    }
-  }
+defineOptions({ name: 'Icons' })
+
+// SVG icons are registered via vite-plugin-svg-icons (iconDirs: src/icons/svg).
+// Collect their names by globbing the same directory; the symbolId pattern is
+// `icon-[name]`, so svg-icon matches by the bare file name (without extension).
+const modules = import.meta.glob('@/icons/svg/*.svg')
+const svgIcons = Object.keys(modules).map(path => path.match(/\/([^/]+)\.svg$/)![1])
+
+// Element Plus icon components, registered globally in main.ts.
+const elementIcons = Object.keys(ElementPlusIconsVue)
+
+function generateIconCode(symbol: string) {
+  return `<svg-icon icon-class="${symbol}" />`
+}
+
+function generateElementIconCode(symbol: string) {
+  return `<el-icon><${symbol} /></el-icon>`
+}
+
+function handleClipboard(text: string, event: MouseEvent) {
+  clip(text, event)
 }
 </script>
 

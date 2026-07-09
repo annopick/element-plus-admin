@@ -1,8 +1,8 @@
-import Vue from 'vue'
+import { ElMessage } from 'element-plus'
 import Clipboard from 'clipboard'
 
 function clipboardSuccess() {
-  Vue.prototype.$message({
+  ElMessage({
     message: 'Copy successfully',
     type: 'success',
     duration: 1500
@@ -10,14 +10,14 @@ function clipboardSuccess() {
 }
 
 function clipboardError() {
-  Vue.prototype.$message({
+  ElMessage({
     message: 'Copy failed',
     type: 'error'
   })
 }
 
-export default function handleClipboard(text, event) {
-  const clipboard = new Clipboard(event.target, {
+export default function handleClipboard(text: string, event: MouseEvent) {
+  const clipboard = new Clipboard(event.target as Element, {
     text: () => text
   })
   clipboard.on('success', () => {
@@ -28,5 +28,6 @@ export default function handleClipboard(text, event) {
     clipboardError()
     clipboard.destroy()
   })
-  clipboard.onClick(event)
+  // ClipboardJS#onClick is not in the type defs but exists on the instance.
+  ;(clipboard as unknown as { onClick: (e: MouseEvent) => void }).onClick(event)
 }
