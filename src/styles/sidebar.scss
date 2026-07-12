@@ -129,10 +129,10 @@
           margin-left: 19px;
         }
 
-        // Hide text spans that leak out in collapsed mode.
-        // Element Plus wraps the icon in .el-tooltip__trigger > span,
-        // so we hide spans that are NOT inside the tooltip trigger.
-        > span:not(.el-tooltip__trigger) {
+        // Hide text spans in collapsed mode, but keep icon spans.
+        // DOM structure: <span><svg class="svg-icon"/></span> <span>Text</span>
+        // The icon span contains an svg-icon or sub-el-icon; the text span does not.
+        > span:not(:has(.svg-icon)):not(:has(.sub-el-icon)):not(:has(.el-icon)) {
           display: none;
         }
       }
