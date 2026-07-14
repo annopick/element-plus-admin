@@ -135,6 +135,14 @@ async function logout() {
       }
     }
 
+    // Element Plus el-tooltip trigger wrapper needs same alignment as siblings
+    :deep(.el-tooltip__trigger) {
+      display: inline-flex;
+      align-items: center;
+      height: 100%;
+      vertical-align: text-bottom;
+    }
+
     .avatar-container {
       margin-right: 30px;
 

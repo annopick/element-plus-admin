@@ -73,6 +73,13 @@ function mixColor(color1: string, color2: string, weight: number): string {
   width: 26px !important;
   padding: 2px;
 }
+.theme-picker-dropdown {
+  /* The Settings panel (RightPanel) is teleported to body with z-index 40000
+     and its fullscreen backdrop is at 20000. The color-picker popper is also
+     teleported to body, so it needs a higher z-index to sit above the panel. */
+  z-index: 99999 !important;
+}
+
 .theme-picker-dropdown .el-color-dropdown__link-btn {
   display: none;
 }

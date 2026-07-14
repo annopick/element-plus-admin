@@ -43,8 +43,13 @@ function addEventClick(): void {
 }
 
 function closeSidebar(evt: MouseEvent): void {
-  const parent = (evt.target as HTMLElement).closest('.rightPanel')
-  if (!parent) {
+  const target = evt.target as HTMLElement
+  // Keep panel open when clicking inside the panel, or inside a popper/dropdown
+  // that was spawned from the panel (e.g. ThemePicker's color-picker popper,
+  // which Element Plus teleports to <body> — outside .rightPanel).
+  const inPanel = target.closest('.rightPanel')
+  const inPopper = target.closest('.el-popper') || target.closest('.el-color-dropdown')
+  if (!inPanel && !inPopper) {
     show.value = false
     window.removeEventListener('click', closeSidebar)
   }

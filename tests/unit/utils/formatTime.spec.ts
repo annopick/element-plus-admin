@@ -1,10 +1,11 @@
-import { formatTime } from '@/utils/index.js'
+import { formatTime } from '@/utils/index'
+
 describe('Utils:formatTime', () => {
   const d = new Date('2018-07-13 17:54:01') // "2018-07-13 17:54:01"
   const retrofit = 5 * 1000
 
   it('ten digits timestamp', () => {
-    expect(formatTime((d / 1000).toFixed(0))).toBe('7月13日17时54分')
+    expect(formatTime((d.getTime() / 1000).toFixed(0))).toBe('7月13日17时54分')
   })
   it('test now', () => {
     expect(formatTime(+new Date() - 1)).toBe('刚刚')

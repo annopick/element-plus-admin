@@ -70,18 +70,18 @@
 
     // menu hover
     .submenu-title-noDropdown,
-    .el-submenu__title {
+    .el-sub-menu__title {
       &:hover {
         background-color: $menuHover !important;
       }
     }
 
-    .is-active>.el-submenu__title {
+    .is-active>.el-sub-menu__title {
       color: $subMenuActiveText !important;
     }
 
-    & .nest-menu .el-submenu>.el-submenu__title,
-    & .el-submenu .el-menu-item {
+    & .nest-menu .el-sub-menu>.el-sub-menu__title,
+    & .el-sub-menu .el-menu-item {
       min-width: $sideBarWidth !important;
       background-color: $subMenuBg !important;
 
@@ -117,10 +117,31 @@
       }
     }
 
-    .el-submenu {
+    // Element Plus: collapsed menu items need icon centering
+    .el-menu--collapse {
+      .el-menu-item,
+      .el-sub-menu__title {
+        .svg-icon {
+          margin-left: 20px;
+        }
+
+        .sub-el-icon {
+          margin-left: 19px;
+        }
+
+        // Hide text spans in collapsed mode, but keep icon spans.
+        // DOM structure: <span><svg class="svg-icon"/></span> <span>Text</span>
+        // The icon span contains an svg-icon or sub-el-icon; the text span does not.
+        > span:not(:has(.svg-icon)):not(:has(.sub-el-icon)):not(:has(.el-icon)) {
+          display: none;
+        }
+      }
+    }
+
+    .el-sub-menu {
       overflow: hidden;
 
-      &>.el-submenu__title {
+      &>.el-sub-menu__title {
         padding: 0 !important;
 
         .svg-icon {
@@ -131,28 +152,21 @@
           margin-left: 19px;
         }
 
-        .el-submenu__icon-arrow {
+        .el-sub-menu__icon-arrow {
           display: none;
         }
       }
     }
 
-    .el-menu--collapse {
-      .el-submenu {
-        &>.el-submenu__title {
-          &>span {
-            height: 0;
-            width: 0;
-            overflow: hidden;
-            visibility: hidden;
-            display: inline-block;
-          }
-        }
-      }
-    }
+    // Element Plus's built-in .el-menu--collapse mode natively hides the menu
+    // item text and renders only the icons (wrapped in el-tooltip triggers).
+    // The previous `>span { visibility: hidden }` rules were too broad: they
+    // hid the icon wrapper spans as well, making collapsed icons disappear.
+    // Rely on Element Plus's native collapse text-hiding instead. Icon
+    // centering is handled by the .el-menu--collapse rules above.
   }
 
-  .el-menu--collapse .el-menu .el-submenu {
+  .el-menu--collapse .el-menu .el-sub-menu {
     min-width: $sideBarWidth !important;
   }
 
@@ -197,7 +211,7 @@
     }
   }
 
-  .nest-menu .el-submenu>.el-submenu__title,
+  .nest-menu .el-sub-menu>.el-sub-menu__title,
   .el-menu-item {
     &:hover {
       // you can use $subMenuHover

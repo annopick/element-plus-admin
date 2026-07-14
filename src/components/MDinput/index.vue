@@ -1,7 +1,9 @@
 <template>
   <div :class="computedClasses" class="material-input__component">
     <div :class="{ iconClass: icon }">
-      <i v-if="icon" :class="['el-icon-' + icon]" class="el-input__icon material-input__icon" />
+      <el-icon v-if="icon" class="el-input__icon material-input__icon">
+        <component :is="icon" />
+      </el-icon>
       <input
         v-if="type === 'email'"
         v-model="currentValue"

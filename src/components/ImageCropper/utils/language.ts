@@ -1,4 +1,25 @@
-export default {
+interface LangPack {
+  hint: string
+  loading: string
+  noSupported: string
+  success: string
+  fail: string
+  preview: string
+  btn: {
+    off: string
+    close: string
+    back: string
+    save: string
+  }
+  error: {
+    onlyImg: string
+    outOfSize: string
+    lowestPx?: string
+    loewstPx?: string
+  }
+}
+
+const language: Record<string, LangPack> = {
   zh: {
     hint: '点击，或拖动图片至此处',
     loading: '正在上传……',
@@ -230,3 +251,5 @@ export default {
     }
   }
 }
+
+export default language
