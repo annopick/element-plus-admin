@@ -43,12 +43,12 @@ English | [简体中文](./README.zh-CN.md) | [日本語](./README.ja.md) | [Spa
         </a>
       </td>
     </tr>
-  </tbody> 
+  </tbody>
 </table>-->
 
 ## Introduction
 
-[vue-element-admin](https://panjiachen.github.io/vue-element-admin) is a production-ready front-end solution for admin interfaces. It is based on [vue 3](https://github.com/vuejs/core) and uses the UI Toolkit [element-plus](https://github.com/element-plus/element-plus).
+[vue-element-admin](https://panjiachen.github.io/vue-element-admin) is a production-ready front-end solution for admin interfaces. It is based on [Vue 3](https://github.com/vuejs/core) and uses the UI Toolkit [Element Plus](https://github.com/element-plus/element-plus).
 
 [vue-element-admin](https://panjiachen.github.io/vue-element-admin) is built on a modern development stack (Vue 3 + TypeScript + Vite + Pinia) and it has a built-in i18n solution, typical templates for enterprise applications, and lots of awesome features. It helps you build large and complex Single-Page Applications. I believe whatever your needs are, this project will help you.
 
@@ -62,25 +62,27 @@ English | [简体中文](./README.zh-CN.md) | [日本語](./README.ja.md) | [Spa
 
 - [Wiki](https://github.com/PanJiaChen/vue-element-admin/wiki)
 
-- [Gitee](https://panjiachen.gitee.io/vue-element-admin/) 国内用户可访问该地址在线预览
+- [Gitee](https://panjiachen.gitee.io/vue-element-admin/) Chinese users can visit this preview address
 
 - Base template recommends using: [vue-admin-template](https://github.com/PanJiaChen/vue-admin-template)
 - Desktop: [electron-vue-admin](https://github.com/PanJiaChen/electron-vue-admin)
-- Typescript: [vue-typescript-admin-template](https://github.com/Armour/vue-typescript-admin-template) (Credits: [@Armour](https://github.com/Armour))
 - [awesome-project](https://github.com/PanJiaChen/vue-element-admin/issues/2312)
 
-**After the `v4.1.0+` version, the default master branch will not support i18n. Please use [i18n Branch](https://github.com/PanJiaChen/vue-element-admin/tree/i18n), it will keep up with the master update**
+## Migration
 
-**The current version is `v5.0+` built on Vue 3 + TypeScript + Vite. If you find a problem, please put [issue](https://github.com/PanJiaChen/vue-element-admin/issues/new).**
+**The current version is `v5.0+` and is built on Vue 3 + TypeScript + Vite + Pinia + Element Plus.**
 
-**This project does not support low version browsers (e.g. IE). Please add polyfill by yourself.**
+If you are upgrading from a previous `v4.x` branch (Vue 2 + Vue CLI + Vuex + Element UI), please clone the repository again and migrate your business code. The v5 architecture is not compatible with the v4 build system, and the project no longer supports Internet Explorer.
+
+If you encounter any problems, please feel free to submit an [issue](https://github.com/PanJiaChen/vue-element-admin/issues/new).
+
+**This project does not support low-version browsers (e.g. IE). Please add polyfills by yourself if needed.**
 
 ## Preparation
 
-You need to install [node](https://nodejs.org/) and [git](https://git-scm.com/) locally. The project is based on [ES2015+](https://es6.ruanyifeng.com/), [Vue 3](https://vuejs.org/), [Pinia](https://pinia.vuejs.org/), [vue-router](https://router.vuejs.org/), [Vite](https://vitejs.dev/), [axios](https://github.com/axios/axios) and [element-plus](https://github.com/element-plus/element-plus), all request data is simulated using [Mock.js](https://github.com/nuysoft/Mock).
-Understanding and learning this knowledge in advance will greatly help the use of this project.
+You need to install [node](https://nodejs.org/) and [git](https://git-scm.com/) locally. The project is based on [ES2015+](https://es6.ruanyifeng.com/), [Vue 3](https://vuejs.org/), [Pinia](https://pinia.vuejs.org/), [vue-router](https://router.vuejs.org/), [Vite](https://vitejs.dev/), [axios](https://github.com/axios/axios) and [Element Plus](https://github.com/element-plus/element-plus). All request data is simulated using [Mock.js](https://github.com/nuysoft/Mock).
 
-[![Edit on CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/PanJiaChen/vue-element-admin/tree/CodeSandbox)
+Understanding and learning this knowledge in advance will greatly help you use this project.
 
 <p align="center">
   <img width="900" src="https://wpimg.wallstcn.com/a5894c1b-f6af-456e-82df-1151da0839bf.png">

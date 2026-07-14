@@ -23,13 +23,16 @@ about: Asking questions about use
 #### Screenshot or Gif（截图或动态图）
 
 
-#### Link to minimal reproduction（最小可在线还原demo）
+#### Link to minimal reproduction（最小可在线还原 demo）
 
 <!--
-Please only use Codepen, JSFiddle, CodeSandbox or a github repo
+Please only use Codepen, JSFiddle, CodeSandbox or a GitHub repo
 -->
 
-#### Other relevant information（格外信息）
+#### Environment information（环境信息）
 - Your OS:
 - Node.js version:
+- Vue version: 3.x
+- Element Plus version:
+- Vite version:
 - vue-element-admin version:
