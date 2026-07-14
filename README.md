@@ -43,7 +43,7 @@ English | [简体中文](./README.zh-CN.md) | [日本語](./README.ja.md) | [Spa
         </a>
       </td>
     </tr>
-  </tbody> 
+  </tbody>
 </table>-->
 
 ## Introduction
@@ -83,8 +83,6 @@ If you encounter any problems, please feel free to submit an [issue](https://git
 You need to install [node](https://nodejs.org/) and [git](https://git-scm.com/) locally. The project is based on [ES2015+](https://es6.ruanyifeng.com/), [Vue 3](https://vuejs.org/), [Pinia](https://pinia.vuejs.org/), [vue-router](https://router.vuejs.org/), [Vite](https://vitejs.dev/), [axios](https://github.com/axios/axios) and [Element Plus](https://github.com/element-plus/element-plus). All request data is simulated using [Mock.js](https://github.com/nuysoft/Mock).
 
 Understanding and learning this knowledge in advance will greatly help you use this project.
-
-[![Edit on CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/PanJiaChen/vue-element-admin/tree/CodeSandbox)
 
 <p align="center">
   <img width="900" src="https://wpimg.wallstcn.com/a5894c1b-f6af-456e-82df-1151da0839bf.png">
