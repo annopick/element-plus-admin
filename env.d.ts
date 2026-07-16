@@ -28,6 +28,12 @@ declare module '@/styles/variables.scss' {
 
 interface ImportMetaEnv {
   readonly VITE_APP_BASE_API: string
+  /**
+   * When 'true', src/main.ts installs the front-end XHR mock (mock/index.js
+   * mockXHR) so the GitHub Pages demo can serve login/articles data with no
+   * backend. Only set in .env.demo.
+   */
+  readonly VITE_APP_USE_FRONTEND_MOCK?: string
 }
 interface ImportMeta {
   readonly env: ImportMetaEnv

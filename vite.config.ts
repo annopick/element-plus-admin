@@ -31,7 +31,13 @@ export default defineConfig(({ mode }) => {
   if (env.VITE_APP_BASE_API) {
     process.env.VITE_APP_BASE_API = env.VITE_APP_BASE_API
   }
+  // GitHub Pages serves project sites under a sub-path
+  // (https://<user>.github.io/<repo>/), so assets must be rebased. Only the
+  // 'demo' build mode (npm run build:demo) sets this; regular build/build:stage
+  // stay at '/' so local and self-hosted deployments are unaffected.
+  const base = mode === 'demo' ? '/element-plus-admin/' : '/'
   return {
+    base,
     plugins: [
       vue(),
       createSvgIconsPlugin({
