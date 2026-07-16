@@ -77,6 +77,15 @@ export default defineConfig(({ mode }) => {
       open: true
     },
     build: {
+      // The demo's front-end mock reuses data from mock/*.js (CommonJS). Rollup
+      // leaves `module.exports` / `require()` in those files unconverted when
+      // they are pulled in via import.meta.glob, which crashes in the browser
+      // ("module is not defined"). Explicitly mark mock/ as CommonJS so the
+      // built-in plugin converts it. Only affects demo builds that bundle mock.
+      commonjsOptions: {
+        transformMixedEsModules: true,
+        include: [/node_modules/, /mock\//, /mock/]
+      },
       rollupOptions: {
         output: {
           manualChunks: {
